@@ -967,12 +967,13 @@ function ChatContainer() {
           {showEmojiPicker && (
             <div className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer">
               <EmojiPicker
-                onEmojiClick={(emojiData) =>
-                  setInput((prev) => prev + emojiData.emoji)
-                }
-                inputRef.current?.focus();
-                  searchDisabled={false}
-                  autoFocusSearch={false}
+
+                      onEmojiClick={(emojiData) => {
+        setInput((prev) => prev + emojiData.emoji);
+        inputRef.current?.focus();
+      }}
+      searchDisabled={false}
+      autoFocusSearch={false}
                 
                 theme="dark"
                 height={350}
