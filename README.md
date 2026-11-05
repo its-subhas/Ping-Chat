@@ -1,65 +1,81 @@
 # Ping
 
-**Ping** is a real-time chat application built with React, Node.js, Express, MongoDB, Socket.IO, and Google Gemini. It includes private messaging, online presence, typing indicators, read receipts, audio/video calling, Google sign-in, and Gemini-powered chat and automatic replies.
+**Ping** is a real-time chat application built with React, Node.js, Express, MongoDB, Socket.IO, WebRTC, and Google Gemini. It includes private messaging, online presence, typing indicators, read receipts, audio/video calling, Google sign-in, and Gemini-powered chat and automatic replies.
 
-- **Live application:** https://ping-chat-omega.vercel.app
+- **Live Application:** https://ping-chat-omega.vercel.app
 - **Backend:** https://ping-server-0q6n.onrender.com
-- **Repository:** https://github.com/its-subhas/Ping-Chat
+- **GitHub Repository:** https://github.com/its-subhas/Ping-Chat
 
-> This documentation is based on the source code in the supplied repository archive. The group-chat screens are currently a frontend demo using static data; the backend does not yet contain group-chat APIs or group persistence.
-
-## Contents
+## Table of Contents
 
 - [Features](#features)
 - [Screenshots](#screenshots)
-- [Technology stack](#technology-stack)
-- [Repository structure](#repository-structure)
+- [Technology Stack](#technology-stack)
+- [Repository Structure](#repository-structure)
 - [Architecture](#architecture)
-- [Getting started](#getting-started)
-- [Environment variables](#environment-variables)
-- [API reference](#api-reference)
-- [Real-time events](#real-time-events)
-- [Authentication and security](#authentication-and-security)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Reference](#api-reference)
+- [Real-Time Communication](#real-time-communication)
+- [Authentication and Security](#authentication-and-security)
 - [Deployment](#deployment)
-- [Implementation notes](#implementation-notes)
+- [Implementation Notes](#implementation-notes)
 - [License](#license)
 
 ## Features
 
-### Private messaging
-
-- Send and receive text messages in real time.
-- Share images; uploaded chat images are stored through Cloudinary.
-- See online users and live typing indicators.
-- Track unread messages.
-- Mark received messages as seen and update the sender's read status in real time.
-- Delete messages you sent; deletion is synchronized with the recipient.
-- View user profiles and update profile details and profile pictures.
-
 ### Authentication
 
-- Email and password registration and login.
-- Google OAuth sign-in and registration.
-- Password hashing with bcrypt.
-- Short-lived access tokens and refresh-token-based sessions.
-- HTTP-only authentication cookies and server-side session revocation.
+- User registration and login
+- Google OAuth authentication
+- Password hashing with bcrypt
+- JWT access and refresh token authentication
+- HTTP-only authentication cookies
+- Session management and revocation
+- Automatic access token refresh
 
-### Audio and video calling
+### Private Messaging
 
-- Audio and video calling using WebRTC.
-- Socket.IO signaling for offers, answers, ICE candidates, call acceptance/rejection, call termination, and camera status.
-- In-call controls in the client interface.
+- Real-time private messaging
+- Send and receive text messages
+- Share images
+- Online and offline user presence
+- Real-time typing indicators
+- Message seen/read status
+- Unread message counts
+- Delete messages
+- User profile information
 
-### Gemini features
+### Audio and Video Calling
 
-- **Gemini Assistant Chat:** A separate assistant conversation that accepts text, conversation history, and supported image inputs.
-- **AI Auto-Reply:** An account-level setting that allows Gemini to generate and send conversational replies to incoming private messages. The server queues messages, shows an AI typing indicator, considers recent text/image context, and limits an AI-to-AI reply chain to five generated replies.
+- Real-time audio calls
+- Video calls
+- Incoming call notifications
+- Accept and reject calls
+- Microphone mute controls
+- Camera on/off controls
+- WebRTC-based peer-to-peer communication
+- Socket.IO-based call signaling
 
-### Group interface
+### Gemini AI Integration
 
-- Includes group-oriented screens and sample group/message data on the frontend.
-- Group creation, group messages, group membership, and group persistence are not implemented in the supplied backend source.
-- The current group screens should therefore be considered a UI/demo feature, not a completed server-backed group chat.
+- Gemini Assistant Chat
+- AI-powered automatic replies
+- Context-aware AI conversations
+- Image-aware assistant interactions
+- AI typing indicators
+- Separate Assistant Chat and Auto-Reply functionality
+
+### Profile Management
+
+- Update profile information
+- Change profile picture
+- Edit biography
+- Cloudinary image storage
+
+### Group Chat Status
+
+> **Group Chat:** Group chat functionality is currently hidden from the home screen and is not available in the user interface. Group messaging is not implemented in the backend.
 
 ## Screenshots
 
@@ -91,23 +107,47 @@
 
 ![Video Call](Screenshots/Video-Call.png)
 
-## Technology stack
+## Technology Stack
 
-| Area | Technologies |
+### Frontend
+
+| Technology | Purpose |
 |---|---|
-| Frontend | React 19, Vite 8, Tailwind CSS 4 |
-| Routing and state | React Router 7, Redux Toolkit, React Redux |
-| HTTP and notifications | Axios, React Hot Toast |
-| Real-time client | Socket.IO Client |
-| Backend | Node.js, Express 5 |
-| Database | MongoDB, Mongoose |
-| Authentication | JSON Web Token, bcryptjs, HTTP-only cookies, Google Auth Library |
-| File and image hosting | Cloudinary |
-| AI | Google Gemini via `@google/genai` |
-| Calling | WebRTC and Socket.IO signaling |
-| Deployment | Vercel rewrites and a Node.js hosting provider |
+| React | User interface |
+| Vite | Development and build tool |
+| Tailwind CSS | Styling |
+| Redux Toolkit | State management |
+| React Router | Client-side routing |
+| Axios | HTTP requests |
+| Socket.IO Client | Real-time communication |
+| WebRTC | Audio/video communication |
+| React Hot Toast | Notifications |
 
-## Repository structure
+### Backend
+
+| Technology | Purpose |
+|---|---|
+| Node.js | JavaScript runtime |
+| Express.js | Backend framework |
+| MongoDB | Database |
+| Mongoose | Database modeling |
+| Socket.IO | Real-time communication |
+| JSON Web Token | Authentication |
+| bcryptjs | Password hashing |
+| Cookie Parser | Cookie handling |
+| Cloudinary | Image storage |
+| Google Auth Library | Google OAuth |
+| Google Gemini | AI integration |
+
+### Deployment and Services
+
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Database:** MongoDB
+- **Image Storage:** Cloudinary
+- **AI:** Google Gemini
+
+## Repository Structure
 
 ```text
 Ping-Chat/
@@ -124,60 +164,43 @@ Ping-Chat/
     ├── Ping-Client/
     │   ├── public/
     │   ├── src/
-    │   │   ├── assets/
-    │   │   ├── components/
-    │   │   ├── lib/
-    │   │   ├── pages/
-    │   │   ├── store/
-    │   │   ├── App.jsx
-    │   │   ├── index.css
-    │   │   └── main.jsx
     │   ├── package.json
-    │   ├── vite.config.js
-    │   └── vercel.json
+    │   └── README.md
     └── Ping-Server/
+        ├── config/
         ├── controllers/
-        ├── lib/
         ├── middleware/
         ├── models/
-        ├── public/
         ├── routes/
+        ├── lib/
         ├── package.json
-        └── server.js
+        └── README.md
 ```
-
-### Main backend modules
-
-- `controllers/userController.js` — Signup, login, Google callback, token refresh, profile updates, logout, and AI Auto-Reply setting.
-- `controllers/messageController.js` — Private messages, read receipts, message deletion, and the AI Auto-Reply queue.
-- `controllers/geminiController.js` — Gemini Assistant and AI Auto-Reply generation.
-- `routes/userRoutes.js` and `routes/messageRoutes.js` — HTTP route definitions.
-- `middleware/auth.js` — Access-token and active-session verification.
-- `middleware/validator.js` — Signup, login, and profile input validation.
-- `models/User.js`, `models/Message.js`, and `models/Session.js` — MongoDB models.
-- `lib/calls.js` — Socket.IO call signaling.
-- `lib/cloudinary.js` — Cloudinary configuration.
 
 ## Architecture
 
-1. The React client renders the chat interface and manages application/authentication state with Redux Toolkit.
-2. HTTP requests use Axios with credentials enabled. The frontend sends the in-memory access token as a Bearer token when available.
-3. Express validates protected requests with the access token and checks the associated active session in MongoDB.
-4. MongoDB stores users, private messages, and sessions.
-5. Socket.IO handles live private-message, online-presence, typing, read-receipt, and call-signaling updates.
-6. Cloudinary stores profile and chat images.
-7. The backend calls Gemini for assistant responses and optional automatic replies.
+Ping uses a client-server architecture.
 
-## Getting started
+1. **Frontend:** React renders the application and manages UI state using Redux Toolkit.
+2. **HTTP Communication:** Axios communicates with Express API endpoints.
+3. **Authentication:** JWT access and refresh tokens manage authenticated sessions.
+4. **Database:** MongoDB stores user information, messages, and session data.
+5. **Real-Time Communication:** Socket.IO handles online presence, messaging events, typing indicators, and call signaling.
+6. **Media Storage:** Cloudinary stores uploaded profile pictures and message images.
+7. **AI Integration:** Google Gemini powers Assistant Chat and automatic replies.
+8. **Audio/Video:** WebRTC provides peer-to-peer audio and video communication.
+
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (use a current LTS release).
-- npm.
-- A MongoDB database.
-- Cloudinary credentials for image uploads.
-- Google Gemini API key for Gemini features.
-- Google OAuth credentials if Google sign-in is enabled.
+Install the following before running the project:
+
+- Node.js and npm
+- MongoDB database
+- Cloudinary account
+- Google Gemini API key
+- Google Cloud OAuth credentials (for Google sign-in)
 
 ### 1. Clone the repository
 
@@ -186,232 +209,235 @@ git clone https://github.com/its-subhas/Ping-Chat.git
 cd Ping-Chat
 ```
 
-### 2. Configure and start the backend
+### 2. Set up the backend
 
 ```bash
 cd "Ping Chat/Ping-Server"
 npm install
 ```
 
-Create a `.env` file in `Ping-Server/` using the backend variables documented in the [Environment variables](#environment-variables) section.
+Create a `.env` file and configure the backend environment variables described below.
 
-Start the development server:
+Start the backend:
 
 ```bash
 npm run dev
 ```
 
-The backend uses `PORT` when supplied and otherwise listens on port `3000`. Its root page and `/api/status` endpoint provide basic server status.
+### 3. Set up the frontend
 
-### 3. Configure and start the frontend
-
-Open a second terminal:
+Open another terminal:
 
 ```bash
-cd "Ping Chat/Ping-Client"
+cd "Ping-Chat/Ping Chat/Ping-Client"
 npm install
 ```
 
-Create a `.env` file in `Ping-Client/` and set `VITE_BACKEND_URL` to your backend origin.
+Create a `.env` file:
 
-Start Vite:
+```env
+VITE_BACKEND_URL=http://localhost:7000
+```
+
+Start the frontend:
 
 ```bash
 npm run dev
 ```
 
-**Local development note:** The supplied Vite configuration does not define an `/api` development proxy. The frontend's Axios client calls same-origin `/api/...` paths, while the included Vercel rewrite handles those paths in the deployed application. For local development, configure a Vite `/api` proxy to your backend or use a local setup that applies the same rewrite.
+The frontend normally runs at `http://localhost:5173`, and the backend runs at `http://localhost:7000`.
 
-`VITE_BACKEND_URL` is used by the Socket.IO client; it does not set Axios's HTTP base URL in the supplied code.
+## Environment Variables
 
-## Environment variables
+### Frontend – Ping-Client
 
-Do not commit `.env` files or secret values.
+Create `.env` inside `Ping-Client`:
 
-### Frontend — `Ping Chat/Ping-Client/.env`
+```env
+VITE_BACKEND_URL=http://localhost:7000
+```
 
-| Variable | Required | Description |
+| Variable | Description |
+|---|---|
+| `VITE_BACKEND_URL` | Backend URL used for Socket.IO connections |
+
+### Backend – Ping-Server
+
+Create `.env` inside `Ping-Server`:
+
+```env
+PORT=7000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
+
+MONGODB_URI=your_mongodb_connection_string
+
+JWT_SECRET_ACCESS_TOKEN=your_access_token_secret
+JWT_SECRET_REFRESH_TOKEN=your_refresh_token_secret
+
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+GEMINI_API_KEY=your_gemini_api_key
+
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:7000/api/auth/google/callback
+```
+
+| Variable | Description |
+|---|---|
+| `PORT` | Backend server port |
+| `NODE_ENV` | Application environment |
+| `CLIENT_URL` | Frontend origin allowed by CORS |
+| `MONGODB_URI` | MongoDB connection string |
+| `JWT_SECRET_ACCESS_TOKEN` | Access token signing secret |
+| `JWT_SECRET_REFRESH_TOKEN` | Refresh token signing secret |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `GOOGLE_REDIRECT_URI` | Google OAuth callback URL |
+
+**Important:**
+- Replace all placeholder values with your actual credentials.
+- The application uses the `Ping` MongoDB database; configure the connection string according to your database setup.
+- Never commit `.env` files or expose private credentials.
+- Configure the Google OAuth redirect URI to exactly match the URL registered in Google Cloud Console.
+
+## API Reference
+
+The backend exposes the following API routes.
+
+### Authentication
+
+Base route: `/api/auth`
+
+| Method | Endpoint | Description |
 |---|---|---|
-| `VITE_BACKEND_URL` | Yes | Backend origin used by the Socket.IO client, e.g. `http://localhost:3000` locally or your deployed backend origin. |
+| POST | `/signup` | Register a new user |
+| POST | `/login` | Authenticate a user |
+| POST | `/refresh` | Refresh access token |
+| GET | `/check` | Check authentication |
+| PUT | `/update-profile` | Update user profile |
+| PUT | `/ai-auto-reply` | Update AI Auto-Reply setting |
+| POST | `/logout` | Logout and revoke session |
+| GET | `/google` | Start Google OAuth |
+| GET | `/google/callback` | Handle Google OAuth callback |
 
-### Backend — `Ping Chat/Ping-Server/.env`
+### Messages
 
-| Variable | Required | Description |
+Base route: `/api/messages`
+
+| Method | Endpoint | Description |
 |---|---|---|
-| `PORT` | No | HTTP server port; defaults to `3000`. |
-| `NODE_ENV` | Yes for production behavior | Set to `production` in production so cookies use `Secure` and `SameSite=None`; use `development` locally. |
-| `CLIENT_URL` | Yes | Frontend origin allowed by Express/Socket.IO CORS and used after Google OAuth, e.g. `http://localhost:5173` or your deployed frontend origin. |
-| `MONGODB_URI` | Yes | MongoDB connection URI. The backend appends `/Ping` as the database name. |
-| `JWT_SECRET_ACCESS_TOKEN` | Yes | Secret used to sign and verify access tokens. |
-| `JWT_SECRET_REFRESH_TOKEN` | Yes | Separate secret used to sign and verify refresh tokens. |
-| `CLOUDINARY_CLOUD_NAME` | Yes for image uploads | Cloudinary cloud name. |
-| `CLOUDINARY_API_KEY` | Yes for image uploads | Cloudinary API key. |
-| `CLOUDINARY_API_SECRET` | Yes for image uploads | Cloudinary API secret. |
-| `GEMINI_API_KEY` | Yes for Gemini features | Google Gemini API key. |
-| `GOOGLE_CLIENT_ID` | Yes for Google OAuth | Google OAuth client ID. |
-| `GOOGLE_CLIENT_SECRET` | Yes for Google OAuth | Google OAuth client secret. |
-| `GOOGLE_REDIRECT_URI` | Yes for Google OAuth | Exact backend callback URL: `https://YOUR_BACKEND_HOST/api/auth/google/callback` (or the corresponding local URL). |
-
-Configure the same exact `GOOGLE_REDIRECT_URI` in the Google Cloud OAuth client's authorized redirect URIs.
-
-Set `CLIENT_URL` to the frontend origin, not the Google OAuth callback URL.
-
-## API reference
-
-All application API routes are mounted under `/api`. Protected routes require a valid access token and an active session. The client also sends HTTP-only cookies with requests.
+| GET | `/users` | Retrieve users |
+| GET | `/:id` | Retrieve conversation messages |
+| PUT | `/mark/:id` | Mark messages as seen |
+| POST | `/send/:id` | Send a message |
+| DELETE | `/delete/:messageId` | Delete a message |
+| POST | `/gemini` | Gemini Assistant Chat |
 
 ### Status
 
-| Method | Endpoint | Access | Purpose |
-|---|---|---|---|
-| `GET` | `/` | Public | Backend status page. |
-| `GET` | `/api/status` | Public | JSON status response. |
-
-### Authentication — `/api/auth`
-
-| Method | Endpoint | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/signup` | Public | Create an account. |
-| `POST` | `/login` | Public | Authenticate with email and password. |
-| `POST` | `/refresh` | Refresh cookie | Refresh/rotate the access token using the refresh session. |
-| `GET` | `/check` | Protected | Return the authenticated user. |
-| `PUT` | `/update-profile` | Protected | Update profile name, bio, and optional image. |
-| `PUT` | `/ai-auto-reply` | Protected | Enable or disable the account's AI Auto-Reply setting. |
-| `POST` | `/logout` | Cookie/session | Revoke the current session and clear authentication cookies. |
-| `GET` | `/google` | Public | Start Google OAuth. |
-| `GET` | `/google/callback` | Google OAuth callback | Verify Google identity and create a session. |
-
-Signup body:
-
-```json
-{
-  "fullName": "Your Name",
-  "email": "you@example.com",
-  "password": "StrongPassword1!",
-  "bio": "Hello, I am using Ping!"
-}
-```
-
-Login body:
-
-```json
-{
-  "email": "you@example.com",
-  "password": "StrongPassword1!"
-}
-```
-
-Profile update body accepts `fullName`, `bio`, and optional base64 data-URL `profilePic` (JPG/JPEG/PNG).
-
-AI Auto-Reply body:
-
-```json
-{
-  "aiAutoReply": true
-}
-```
-
-### Messages — `/api/messages`
-
-| Method | Endpoint | Access | Purpose |
-|---|---|---|---|
-| `GET` | `/users` | Protected | List other users and unread-message counts. |
-| `GET` | `/:id` | Protected | Get the private conversation with the specified user; also marks incoming unread messages as seen. |
-| `PUT` | `/mark/:id` | Protected | Mark a message as seen. |
-| `POST` | `/send/:id` | Protected | Send a text message and/or image to the specified user. |
-| `DELETE` | `/delete/:messageId` | Protected | Delete a message sent by the authenticated user. |
-| `POST` | `/gemini` | Protected | Generate a Gemini Assistant response. |
-
-Send-message body accepts `text` and optional base64 image data in `image`.
-
-The delete-message body requires `receiverUserId`.
-
-Gemini request body:
-
-```json
-{
-  "message": "Explain this concept",
-  "history": [],
-  "images": []
-}
-```
-
-The `images` array accepts objects containing `mimeType` (`image/jpeg`, `image/png`, or `image/webp`) and base64 `data`. A message or at least one image is required.
-
-## Real-time events
-
-### Presence and messaging
-
-| Event | Direction | Purpose |
+| Method | Endpoint | Description |
 |---|---|---|
-| `getOnlineUsers` | Server → clients | Broadcast connected user IDs. |
-| `userTyping` | Client → server | Notify a recipient that the sender is typing. |
-| `userStopTyping` | Client → server | Notify a recipient that typing stopped. |
-| `isTyping` | Server → client | Deliver typing state. |
-| `newMessage` | Server → clients | Deliver a new private message, including generated AI replies. |
-| `messageDeleted` | Server → recipient | Notify the recipient that a message was deleted. |
-| `messageSeen` | Server → sender | Update the sender's read/seen state. |
+| GET | `/` | Root endpoint |
+| GET | `/api/status` | Backend status |
 
-### Calls and WebRTC signaling
+## Real-Time Communication
 
-| Event | Purpose |
+Socket.IO handles real-time communication between connected users.
+
+### Messaging and Presence
+
+| Event | Description |
 |---|---|
-| `audioCallOffer`, `videoCallOffer` | Start an incoming audio/video call notification. |
-| `incomingAudioCall`, `incomingVideoCall` | Notify the called user. |
-| `acceptIncomingCalls`, `rejectIncomingCalls` | Accept or reject a call. |
-| `acceptCalls`, `rejectCalls` | Notify the other caller. |
-| `endOutgoingCalls`, `endCalls` | End an unanswered call. |
-| `endConnectedCalls`, `connectedEnds` | End an active call. |
-| `readyForWebRTC` | Coordinate WebRTC setup. |
-| `webrtcOffer`, `webrtcAnswer` | Exchange session descriptions. |
-| `iceCandidate` | Exchange ICE candidates. |
-| `cameraStatus` | Share camera-off status. |
+| `getOnlineUsers` | Update online users |
+| `userTyping` | Notify when a user starts typing |
+| `userStopTyping` | Notify when a user stops typing |
+| `isTyping` | Receive typing status |
+| `newMessage` | Receive a new message |
+| `messageDeleted` | Notify message deletion |
+| `messageSeen` | Notify message seen status |
 
-## Authentication and security
+### Audio and Video Calls
 
-- Passwords are hashed with bcrypt before being stored.
-- Access and refresh tokens use separate JWT secrets.
-- Access tokens are short-lived (15 minutes); refresh sessions are created with a 15-day expiry.
-- Refresh-token values are stored as bcrypt hashes in session records.
-- Session records support revocation and have a TTL index on `expiresAt`.
-- Authentication cookies are HTTP-only. In production, the source configures them with `Secure` and `SameSite=None`; locally it uses non-secure cookies and `SameSite=Lax`.
-- Protected HTTP endpoints verify the access token and check that its session exists, is not revoked, and has not expired.
-- Signup, login, and profile input have server-side validation.
+The call signaling implementation handles:
 
-**Deployment note:** The current Socket.IO connection identifies a user using the `userId` handshake query parameter. The supplied server code does not authenticate that socket handshake with the HTTP session. Review and secure socket identity before treating the real-time layer as production-hardened.
+- Audio and video call offers
+- Incoming call notifications
+- Accepting and rejecting calls
+- Ending calls
+- WebRTC offer and answer exchange
+- ICE candidate exchange
+- Camera status updates
+
+## Authentication and Security
+
+- Passwords are hashed using bcrypt.
+- Access and refresh tokens use separate signing secrets.
+- Access tokens have a 15-minute lifetime.
+- Refresh sessions are configured for up to 15 days.
+- Refresh tokens are stored as hashes in the session database.
+- Protected routes validate the access token and active session.
+- Logout revokes the active session.
+- HTTP-only cookies are used for authentication tokens.
+- CORS is configured to allow the frontend origin with credentials.
+
+**Socket.IO note:** The current socket connection identifies users through a `userId` handshake query parameter. This is separate from the HTTP protected-route authentication flow.
 
 ## Deployment
 
-### Frontend on Vercel
+### Frontend – Vercel
 
-1. Import the repository into Vercel.
-2. Set the project Root Directory to `Ping Chat/Ping-Client`.
-3. Use the Vite build command `npm run build` and output directory `dist`.
-4. Add `VITE_BACKEND_URL` with the backend origin.
-5. Ensure `vercel.json` points `/api/*` requests to the correct backend. The included file currently rewrites them to `https://ping-server-0q6n.onrender.com/api/$1`.
+1. Import the GitHub repository into Vercel.
+2. Set the root directory to `Ping Chat/Ping-Client`.
+3. Configure `VITE_BACKEND_URL` with your deployed backend URL.
+4. Build the project using `npm run build`.
+5. Deploy the frontend.
 
-### Backend on Render or another Node host
+The production API rewrite must point to your deployed backend.
 
-1. Create a Node web service connected to the repository.
-2. Set the Root Directory to `Ping Chat/Ping-Server`.
-3. Build/install command: `npm install`.
-4. Start command: `npm start`.
-5. Add all required backend environment variables.
-6. Set `CLIENT_URL` to the deployed frontend origin.
-7. Set `GOOGLE_REDIRECT_URI` to the deployed backend's `/api/auth/google/callback` URL and register that exact URL in Google Cloud Console.
-8. Set `NODE_ENV=production`.
+### Backend – Render
 
-The backend listens on `process.env.PORT` or port `3000` and binds to `0.0.0.0`.
+1. Create a new Web Service on Render.
+2. Connect the GitHub repository.
+3. Set the root directory to `Ping Chat/Ping-Server`.
+4. Configure the build command as `npm install`.
+5. Configure the start command according to the backend `package.json`.
+6. Add all required backend environment variables.
+7. Deploy the service.
 
-## Implementation notes
+### Google OAuth Configuration
 
-- The group pages currently use static arrays in the frontend assets and local component state. No group models, group controllers, or group API routes are present in the supplied backend archive.
-- WebRTC uses Google's public STUN server (`stun:stun.l.google.com:19302`). No TURN server is configured in the supplied client source. Some networks may therefore prevent calls from connecting; production deployments commonly need TURN infrastructure.
-- The supplied Vite config does not include a development API proxy. Production API forwarding is handled by `vercel.json`.
-- Screenshots are stored in the root `Screenshots/` directory and displayed in this README.
-- The repository does not include `.env` files. Create your own environment files using the variables documented in the Environment variables section.
-- There is no root `LICENSE` file in the supplied archive. The backend `package.json` declares `ISC`, but that alone does not establish a repository-wide license. Add a root license file if you intend to publish explicit reuse terms.
+For production, register this callback URL in Google Cloud Console:
+
+```text
+https://ping-server-0q6n.onrender.com/api/auth/google/callback
+```
+
+For local development:
+
+```text
+http://localhost:7000/api/auth/google/callback
+```
+
+The registered redirect URI and `GOOGLE_REDIRECT_URI` must match exactly.
+
+## Implementation Notes
+
+- Group Chat is currently hidden from the home screen and unavailable in the user interface.
+- Group messaging, group database models, and backend group APIs are not implemented.
+- Gemini Assistant Chat and AI Auto-Reply are separate features.
+- WebRTC currently uses Google's public STUN server. No TURN server is configured, so calls may not connect on some restrictive networks.
+- The frontend uses `/api` for Axios requests, with a production Vercel rewrite to the backend. Configure a development API proxy if you want local Axios requests to reach the local backend.
+- `VITE_BACKEND_URL` is used for the frontend Socket.IO connection.
+- Environment files are not included in the repository. Create your own using the examples above.
 
 ## License
 
-No root project license file was included in the supplied repository archive. Check with the project owner before reusing, modifying, or distributing this project.
+No root-level project license is currently provided. Check the repository for an explicit license before reusing, modifying, or distributing this project.
