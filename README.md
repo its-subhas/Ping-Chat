@@ -11,6 +11,7 @@
 ## Contents
 
 - [Features](#features)
+- [Screenshots](#Screenshots)
 - [Technology stack](#technology-stack)
 - [Repository structure](#repository-structure)
 - [Architecture](#architecture)
@@ -69,6 +70,23 @@
 | AI | Google Gemini via `@google/genai` |
 | Calling | WebRTC and Socket.IO signaling |
 | Deployment configuration | Vercel rewrites; backend can run on a Node hosting provider |
+
+## Screenshots
+
+### Login
+![Login](Screenshots/Login.png)
+
+### Main Chat
+![Main Chat](Screenshots/Chat.png)
+
+### Profile
+![Profile](Screenshots/Profile.png)
+
+### Gemini Assistant
+![Gemini Assistant](Screenshots/Gemini.png)
+
+### Audio / Video Call
+![Audio / Video Call](Screenshots/Audio-Calls.png)
 
 ## Repository structure
 
