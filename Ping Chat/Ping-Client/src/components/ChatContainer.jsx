@@ -89,7 +89,7 @@ function ChatContainer() {
   const geminiControllerRef = useRef(null);
   const geminiRequestIdRef = useRef(0);
   const geminiMessagesRef = useRef(geminiMessages);
-  // const inputRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     geminiMessagesRef.current = geminiMessages;
@@ -965,18 +965,11 @@ function ChatContainer() {
       <div className="shrink-0 flex items-center gap-2 sm:gap-3 p-2 sm:p-1">
         <div className="relative min-w-0 flex-1 flex items-center bg-gray-100/12 px-2 sm:px-3 rounded-full border border-gray-700/50">
 
-          {showEmojiPicker && (
-  <div
-    className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer"
-    onPointerDown={(e) => {
-      // if (e.target.closest("input")) return;
-      e.preventDefault();
-    }}
-  >
+       {showEmojiPicker && (
+  <div className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer">
     <EmojiPicker
       onEmojiClick={(emojiData) => {
         setInput((prev) => prev + emojiData.emoji);
-        // inputRef.current?.focus();
       }}
       searchDisabled={false}
       autoFocusSearch={false}
@@ -988,14 +981,14 @@ function ChatContainer() {
 )}
 
           <button
-            type="button"
-            onPointerDown={(e) => e.preventDefault()}
-            onClick={() => {
-              dispatch(setShowEmojiPicker(!showEmojiPicker));
-            }}
-            aria-label="Open emoji picker"
-            className="shrink-0 p-1.5 sm:p-2 text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer"
-          >
+  type="button"
+  onPointerDown={(e) => e.preventDefault()}
+  onClick={() => {
+    dispatch(setShowEmojiPicker(!showEmojiPicker));
+  }}
+  aria-label="Open emoji picker"
+  className="shrink-0 p-1.5 sm:p-2 text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer"
+>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -1013,7 +1006,7 @@ function ChatContainer() {
           </button>
 
           <input
-            {/* ref={inputRef} */}
+             ref={inputRef} 
             type="text"
             onChange={(e) => {
               setInput(e.target.value);
