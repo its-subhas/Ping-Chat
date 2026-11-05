@@ -969,6 +969,9 @@ function ChatContainer() {
                 onEmojiClick={(emojiData) =>
                   setInput((prev) => prev + emojiData.emoji)
                 }
+                  searchDisabled={false}
+                  autoFocusSearch={false}
+                
                 theme="dark"
                 height={350}
                 width={300}
@@ -1099,7 +1102,6 @@ function ChatContainer() {
 
           <label htmlFor="image" className="shrink-0">
             <img
-              onPointerDown={(e) => e.preventDefault()}
               src={assets.sendImage}
               alt="image"
               className="w-5 h-5 mr-1 sm:mr-2 cursor-pointer"
