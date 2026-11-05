@@ -65,63 +65,69 @@ function App() {
     return () => clearTimeout(timeout);
   }, [token, dispatch]);
 
-  useEffect(() => {
-    const pushBackEntry = () => {
-      window.history.pushState(
-        { ...window.history.state, pingBackEntry: true },
-        "",
-      );
-    };
+  
+useEffect(() => {
+  const pushBackEntry = () => {
+    window.history.pushState(
+      { ...window.history.state, pingBackEntry: true },
+      "",
+    );
+  };
 
-    const updateFullViewportHeight = () => {
-      const height = window.visualViewport?.height || window.innerHeight;
-      if (height > fullViewportHeight.current) {
-        fullViewportHeight.current = height;
-      }
-    };
+  const updateFullViewportHeight = () => {
+    const height = window.visualViewport?.height || window.innerHeight;
+    if (height > fullViewportHeight.current) {
+      fullViewportHeight.current = height;
+    }
+  };
 
+  // Keep two history entries as a safety buffer.
+  pushBackEntry();
+  pushBackEntry();
+
+  window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
+
+  const handleMobileBack = (event) => {
+    event.stopImmediatePropagation();
+
+    // Restore the history entry before handling the back action.
     pushBackEntry();
 
-    window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
+    // Let Android close the keyboard first.
+    const viewport = window.visualViewport;
+    if (viewport && fullViewportHeight.current - viewport.height > 120) {
+      return;
+    }
 
-    const handleMobileBack = (event) => {
-      event.stopImmediatePropagation();
+    const backButton = [...document.querySelectorAll("[data-mobile-back]")].find(
+      (element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
 
-      pushBackEntry();
+        return (
+          style.display !== "none" &&
+          style.visibility !== "hidden" &&
+          rect.width > 0 &&
+          rect.height > 0
+        );
+      },
+    );
 
-      const viewport = window.visualViewport;
-      if (viewport && fullViewportHeight.current - viewport.height > 120) {
-        return;
-      }
+    backButton?.click();
+  };
 
-      const backButton = [...document.querySelectorAll("[data-mobile-back]")].find(
-        (element) => {
-          const style = window.getComputedStyle(element);
-          const rect = element.getBoundingClientRect();
+  window.addEventListener("popstate", handleMobileBack, true);
 
-          return (
-            style.display !== "none" &&
-            style.visibility !== "hidden" &&
-            rect.width > 0 &&
-            rect.height > 0
-          );
-        },
-      );
+  return () => {
+    window.removeEventListener("popstate", handleMobileBack, true);
+    window.visualViewport?.removeEventListener(
+      "resize",
+      updateFullViewportHeight,
+    );
+  };
+}, [location.key]);
 
-      backButton?.click();
-    };
-
-    window.addEventListener("popstate", handleMobileBack, true);
-
-    return () => {
-      window.removeEventListener("popstate", handleMobileBack, true);
-      window.visualViewport?.removeEventListener(
-        "resize",
-        updateFullViewportHeight,
-      );
-    };
-  }, [location.key]);
-
+  
   if (loading) {
     return <Loading />;
   }
