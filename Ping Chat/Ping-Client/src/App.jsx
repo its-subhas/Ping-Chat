@@ -1,3 +1,4 @@
+
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,17 +19,27 @@ function App() {
   const fullViewportHeight = useRef(
     window.visualViewport?.height || window.innerHeight,
   );
-  const backPresses = useRef(0);
-  const allowExit = useRef(false);
 
   const authUser = useSelector((state) => state.authUser);
   const token = useSelector((state) => state.token);
   const selectedUser = useSelector((state) => state.selectedUser);
   const infoUser = useSelector((state) => state.infoUser);
   const group = useSelector((state) => state.group);
+  const loading = useSelector((state) => state.loading);
 
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.loading);
+
+  const currentState = useRef({});
+  const homeBackPresses = useRef(0);
+  const allowExit = useRef(false);
+
+  currentState.current = {
+    pathname: location.pathname,
+    authUser,
+    selectedUser,
+    infoUser,
+    group,
+  };
 
   useEffect(() => {
     const verifyAuth = async () => {
@@ -83,10 +94,24 @@ function App() {
 
     const updateFullViewportHeight = () => {
       const height = window.visualViewport?.height || window.innerHeight;
+
       if (height > fullViewportHeight.current) {
         fullViewportHeight.current = height;
       }
     };
+
+    const findBackButton = () =>
+      [...document.querySelectorAll("[data-mobile-back]")].find((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+
+        return (
+          style.display !== "none" &&
+          style.visibility !== "hidden" &&
+          rect.width > 0 &&
+          rect.height > 0
+        );
+      });
 
     pushBackEntry();
 
@@ -99,6 +124,7 @@ function App() {
 
       const viewport = window.visualViewport;
 
+      // Let the keyboard close before handling app navigation.
       if (
         viewport &&
         fullViewportHeight.current - viewport.height > 120
@@ -107,42 +133,38 @@ function App() {
         return;
       }
 
-      const backButton = [...document.querySelectorAll("[data-mobile-back]")].find(
-        (element) => {
-          const style = window.getComputedStyle(element);
-          const rect = element.getBoundingClientRect();
+      const backButton = findBackButton();
 
-          return (
-            style.display !== "none" &&
-            style.visibility !== "hidden" &&
-            rect.width > 0 &&
-            rect.height > 0
-          );
-        },
-      );
-
+      // Close the currently visible mobile panel first.
       if (backButton) {
         pushBackEntry();
         backButton.click();
         return;
       }
 
-      if (
-        location.pathname === "/" &&
-        authUser &&
-        !selectedUser &&
-        !infoUser &&
-        !group
-      ) {
-        backPresses.current += 1;
+      const {
+        pathname,
+        authUser: currentUser,
+        selectedUser: currentSelectedUser,
+        infoUser: currentInfoUser,
+        group: currentGroup,
+      } = currentState.current;
 
-        if (backPresses.current < 3) {
+      // Do not interfere with other routes or unauthenticated screens.
+      if (pathname !== "/" || !currentUser) {
+        return;
+      }
+
+      // At Home, require three Back presses before allowing browser navigation.
+      if (!currentSelectedUser && !currentInfoUser && !currentGroup) {
+        homeBackPresses.current += 1;
+
+        if (homeBackPresses.current < 3) {
           pushBackEntry();
           return;
         }
 
         allowExit.current = true;
-        window.history.back();
         return;
       }
 
@@ -158,17 +180,11 @@ function App() {
         updateFullViewportHeight,
       );
     };
-  }, [
-    location.pathname,
-    authUser,
-    selectedUser,
-    infoUser,
-    group,
-  ]);
+  }, []);
 
   useEffect(() => {
     if (selectedUser || infoUser || location.pathname !== "/") {
-      backPresses.current = 0;
+      homeBackPresses.current = 0;
     }
   }, [selectedUser, infoUser, location.pathname]);
 
