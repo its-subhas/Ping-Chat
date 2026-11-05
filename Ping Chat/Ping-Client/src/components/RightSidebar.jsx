@@ -1,10 +1,10 @@
+
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { assets } from "../assets/assets";
 import { setInfoUser, setSelectedUser } from "../store/slice";
 import { setShowEmojiPicker } from "../store/ChatSlice";
 
-// Right sidebar component that displays the selected user's profile and media.
 function RightSidebar() {
   const selectedUser = useSelector((state) => state.selectedUser);
   const messages = useSelector((state) => state.messages);
@@ -28,21 +28,16 @@ function RightSidebar() {
 
   return (
     <div className="bg-[#8185B2]/10 text-white w-full h-full min-w-0 flex flex-col overflow-hidden">
-      {/* Back button */}
       <div className="h-12 sm:h-14 flex items-center justify-end px-3 sm:px-4 md:hidden shrink-0">
         <img
           data-mobile-back
-          onClick={() => {
-            dispatch(setInfoUser(false));
-            dispatch(setShowEmojiPicker(false));
-          }}
+          onClick={() => window.history.back()}
           src={assets.arrow}
           alt="back"
           className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer"
         />
       </div>
 
-      {/* Selected user's profile information */}
       <div className="shrink-0 pt-6 sm:pt-10 md:pt-12 lg:pt-16 px-3 sm:px-4 md:px-5 flex flex-col items-center text-xs font-light">
         <img
           src={selectedUser.profilePic || assets.avtar}
@@ -50,7 +45,6 @@ function RightSidebar() {
           className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shrink-0"
         />
 
-        {/* User name and online status */}
         <h1 className="w-full max-w-full mt-3 px-2 sm:px-3 text-lg sm:text-xl font-medium flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
           {(selectedUser._id === "gemini_001" ||
             (Array.isArray(onlineUser) &&
@@ -80,23 +74,19 @@ function RightSidebar() {
           )}
         </h1>
 
-        {/* User email */}
         {selectedUser.verified && (
           <p className="mt-1 px-2 text-xs sm:text-sm text-gray-400 text-center break-all">
             {selectedUser.email}
           </p>
         )}
 
-        {/* User bio */}
         <p className="w-full max-w-xs mt-2 px-2 text-center text-xs sm:text-sm text-gray-300 break-words leading-relaxed">
           {selectedUser.bio}
         </p>
       </div>
 
-      {/* Divider */}
       <hr className="border-[#ffffff50] my-4 sm:my-5 shrink-0" />
 
-      {/* Media section */}
       <div className="flex-1 min-h-0 px-3 sm:px-4 md:px-5 pb-4 flex flex-col overflow-hidden">
         <p className="text-sm sm:text-base shrink-0">Media</p>
 
@@ -105,7 +95,7 @@ function RightSidebar() {
             No Images!
           </div>
         )}
-        {/* Only images scroll */}
+
         {msgImages.length > 0 && (
           <div className="mt-2 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 opacity-80">
@@ -129,7 +119,6 @@ function RightSidebar() {
         )}
       </div>
 
-      {/* Close chat */}
       <div className="shrink-0 px-3 sm:px-4 md:px-5 py-3 sm:py-4 bg-[#282142]/30">
         <button
           onClick={() => {
