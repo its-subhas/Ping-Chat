@@ -89,6 +89,7 @@ function ChatContainer() {
   const geminiControllerRef = useRef(null);
   const geminiRequestIdRef = useRef(0);
   const geminiMessagesRef = useRef(geminiMessages);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     geminiMessagesRef.current = geminiMessages;
@@ -969,6 +970,7 @@ function ChatContainer() {
                 onEmojiClick={(emojiData) =>
                   setInput((prev) => prev + emojiData.emoji)
                 }
+                inputRef.current?.focus();
                   searchDisabled={false}
                   autoFocusSearch={false}
                 
@@ -1005,6 +1007,7 @@ function ChatContainer() {
           </button>
 
           <input
+            ref={inputRef}
             type="text"
             onChange={(e) => {
               setInput(e.target.value);
