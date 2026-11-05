@@ -80,6 +80,7 @@ function ProfilePage() {
             className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-white/10 cursor-pointer transition"
           >
             <img
+              data-mobile-back
               src={assets.arrow}
               alt="back"
               className="w-4 h-4 sm:w-5 sm:h-5"
@@ -159,6 +160,7 @@ function ProfilePage() {
             className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-white/10 cursor-pointer transition"
           >
             <img
+              data-mobile-back
               src={assets.arrow}
               alt="back"
               className="w-4 h-4 sm:w-5 sm:h-5"
