@@ -1,5 +1,6 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import { useEffect } from "react";
+
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
@@ -14,6 +15,11 @@ import { setAuthLoading } from "./store/slice.js";
 import Calls from "./pages/Calls.jsx";
 
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const skipNextPop = useRef(false);
+  const fullViewportHeight = useRef(window.visualViewport?.height || window.innerHeight);
+
   const authUser = useSelector((state) => state.authUser);
   const token = useSelector((state) => state.token);
   const dispatch = useDispatch();
@@ -61,6 +67,53 @@ function App() {
     return () => clearTimeout(timeout);
   }, [token, dispatch]);
 
+  useEffect(() => {
+    const pushBackEntry = () => window.history.pushState({ ...window.history.state, pingBackEntry: true }, "");
+    const updateFullViewportHeight = () => {
+      const height = window.visualViewport?.height || window.innerHeight;
+      if (height > fullViewportHeight.current) fullViewportHeight.current = height;
+    };
+
+    pushBackEntry();
+    window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
+
+    const handleMobileBack = () => {
+      if (skipNextPop.current) {
+        skipNextPop.current = false;
+        return;
+      }
+
+      const viewport = window.visualViewport;
+      if (viewport && fullViewportHeight.current - viewport.height > 120) {
+        pushBackEntry();
+        return;
+      }
+
+      const backButton = [...document.querySelectorAll("[data-mobile-back]")].find((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+      });
+
+      if (backButton) {
+        const currentUrl = window.location.href;
+        backButton.click();
+        if (window.location.href === currentUrl) pushBackEntry();
+        return;
+      }
+
+      skipNextPop.current = true;
+      navigate(-1);
+    };
+
+    window.addEventListener("popstate", handleMobileBack);
+
+    return () => {
+      window.removeEventListener("popstate", handleMobileBack);
+      window.visualViewport?.removeEventListener("resize", updateFullViewportHeight);
+    };
+  }, [location.key, navigate]);
+
   if (loading) {
     return <Loading />;
   }
@@ -93,7 +146,6 @@ function App() {
           path="/calls"
           element={authUser ? <AudioVideoCallPage /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/connectedCalls"
           element={authUser ? <Calls /> : <Navigate to="/login" />}
