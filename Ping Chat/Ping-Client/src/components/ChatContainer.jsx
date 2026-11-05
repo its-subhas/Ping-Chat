@@ -965,8 +965,15 @@ function ChatContainer() {
       <div className="shrink-0 flex items-center gap-2 sm:gap-3 p-2 sm:p-1">
         <div className="relative min-w-0 flex-1 flex items-center bg-gray-100/12 px-2 sm:px-3 rounded-full border border-gray-700/50">
 
-       {showEmojiPicker && (
-  <div className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer">
+      {showEmojiPicker && (
+  <div
+    className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer"
+    onPointerDown={(e) => {
+      if (!e.target.closest("input")) {
+        e.preventDefault();
+      }
+    }}
+  >
     <EmojiPicker
       onEmojiClick={(emojiData) => {
         setInput((prev) => prev + emojiData.emoji);
