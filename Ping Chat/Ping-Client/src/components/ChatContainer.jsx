@@ -43,8 +43,19 @@ function ChatContainer() {
   // Used to navigate between routes.
   const navigate = useNavigate();
 
-  // Used to reference the end of the messages list for scrolling.
-  const scrollEnd = useRef();
+  // Keeps automatic scrolling inside the message history, never the whole page.
+  const messagesContainerRef = useRef(null);
+
+  const scrollToBottom = (behavior = "smooth") => {
+    const container = messagesContainerRef.current;
+
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior,
+      });
+    }
+  };
 
   // Gets the selected user from Redux.
   const selectedUser = useSelector((state) => state.selectedUser);
@@ -491,15 +502,26 @@ function ChatContainer() {
     };
   }, []);
 
-  // Automatically scrolls to the latest message when messages change.
+  // Automatically scrolls only the message history to the latest message.
   useEffect(() => {
-    requestAnimationFrame(() => {
-      scrollEnd.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    });
+    requestAnimationFrame(() => scrollToBottom());
   }, [messages, geminiMessages, typing, geminiLoading]);
+
+  // Keeps the latest message visible when the mobile keyboard changes the viewport.
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const handleViewportResize = () => {
+      requestAnimationFrame(() => scrollToBottom("auto"));
+    };
+
+    viewport.addEventListener("resize", handleViewportResize);
+
+    return () => {
+      viewport.removeEventListener("resize", handleViewportResize);
+    };
+  }, []);
 
   useEffect(() => {
     dispatch(setShowEmojiPicker(false));
@@ -585,12 +607,12 @@ function ChatContainer() {
   return selectedUser ? (
     // Main chat container for the selected user.
     <div
-      className={`h-full min-w-0 overflow-hidden relative backdrop-blur-lg ${
+      className={`h-full min-h-0 min-w-0 overflow-hidden relative flex flex-col backdrop-blur-lg ${
         infoUser ? "max-md:hidden" : ""
       }`}
     >
       {/* Chat header with user information and call controls. */}
-      <div className="flex items-center justify-between gap-2 sm:gap-4 py-3 px-3 sm:px-4 border-b border-stone-500">
+      <div className="flex items-center justify-between gap-2 sm:gap-4 py-3 px-3 sm:px-4 border-b border-stone-500 shrink-0">
         <div
           className="flex gap-2 items-center justify-center min-w-0 cursor-pointer"
           onClick={() => {
@@ -694,7 +716,10 @@ function ChatContainer() {
       {/* Messages section. */}
 
       {hasMessages ? (
-        <div className="flex flex-col h-[calc(100%-116px)] overflow-y-auto px-2 sm:px-3 py-3 pb-6">
+        <div
+          ref={messagesContainerRef}
+          className="flex flex-col flex-1 min-h-0 min-w-0 overflow-y-auto overscroll-contain px-2 sm:px-3 py-3 pb-6"
+        >
           {selectedUser._id !== "gemini_001"
             ? messages.map((msg, index) => {
                 const isSent = msg.senderId === authUser._id;
@@ -768,10 +793,7 @@ function ChatContainer() {
                             alt="message"
                             onLoad={() => {
                               requestAnimationFrame(() => {
-                                scrollEnd.current?.scrollIntoView({
-                                  behavior: "smooth",
-                                  block: "end",
-                                });
+                                scrollToBottom();
                               });
                             }}
                             className={`max-w-full w-auto max-h-64 rounded-lg border border-gray-700 object-cover transition-all duration-200 ${
@@ -858,10 +880,7 @@ function ChatContainer() {
                             alt="message"
                             onLoad={() => {
                               requestAnimationFrame(() => {
-                                scrollEnd.current?.scrollIntoView({
-                                  behavior: "smooth",
-                                  block: "end",
-                                });
+                                scrollToBottom();
                               });
                             }}
                             className="max-w-full w-auto max-h-64 rounded-lg border border-gray-700 object-cover"
@@ -948,10 +967,12 @@ function ChatContainer() {
             </div>
           )}
 
-          <div ref={scrollEnd} className="shrink-0" />
         </div>
       ) : (
-        <div className="flex flex-col h-[calc(100%-116px)] overflow-y-auto px-2 sm:px-3 py-3 pb-6">
+        <div
+          ref={messagesContainerRef}
+          className="flex flex-col flex-1 min-h-0 min-w-0 overflow-y-auto overscroll-contain px-2 sm:px-3 py-3 pb-6"
+        >
           {!typing && (
             <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
               Start Chat!
@@ -973,12 +994,11 @@ function ChatContainer() {
               </div>
             </div>
           )}
-          <div ref={scrollEnd} className="shrink-0" />
         </div>
       )}
 
       {/* Message input section. */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 sm:gap-3 p-2 sm:p-1">
+      <div className="shrink-0 flex items-center gap-2 sm:gap-3 p-2 sm:p-1">
         <div className="relative min-w-0 flex-1 flex items-center bg-gray-100/12 px-2 sm:px-3 rounded-full border border-gray-700/50">
           {/* Emoji picker */}
           {showEmojiPicker && (
