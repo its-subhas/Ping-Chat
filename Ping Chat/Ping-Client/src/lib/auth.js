@@ -44,7 +44,7 @@ export const checkAuth = async (dispatch) => {
 };
 
 export const googleLogin = () => {
-  window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`;
+  window.location.href = "/api/auth/google";
 };
 
 export const login = async (state, credentials, dispatch) => {
