@@ -67,52 +67,49 @@ function App() {
     return () => clearTimeout(timeout);
   }, [token, dispatch]);
 
-  useEffect(() => {
-    const pushBackEntry = () => window.history.pushState({ ...window.history.state, pingBackEntry: true }, "");
-    const updateFullViewportHeight = () => {
-      const height = window.visualViewport?.height || window.innerHeight;
-      if (height > fullViewportHeight.current) fullViewportHeight.current = height;
-    };
+useEffect(() => {
+  const pushBackEntry = () => window.history.pushState({ ...window.history.state, pingBackEntry: true }, "");
+  const updateFullViewportHeight = () => {
+    const height = window.visualViewport?.height || window.innerHeight;
+    if (height > fullViewportHeight.current) fullViewportHeight.current = height;
+  };
+
+  pushBackEntry();
+  window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
+
+  const handleMobileBack = () => {
+    if (skipNextPop.current) {
+      skipNextPop.current = false;
+      return;
+    }
 
     pushBackEntry();
-    window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
 
-    const handleMobileBack = () => {
-      if (skipNextPop.current) {
-        skipNextPop.current = false;
-        return;
-      }
+    const viewport = window.visualViewport;
+    if (viewport && fullViewportHeight.current - viewport.height > 120) return;
 
-      const viewport = window.visualViewport;
-      if (viewport && fullViewportHeight.current - viewport.height > 120) {
-        pushBackEntry();
-        return;
-      }
+    const backButton = [...document.querySelectorAll("[data-mobile-back]")].find((element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+    });
 
-      const backButton = [...document.querySelectorAll("[data-mobile-back]")].find((element) => {
-        const style = window.getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-        return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
-      });
+    if (backButton) {
+      backButton.click();
+      return;
+    }
 
-      if (backButton) {
-        const currentUrl = window.location.href;
-        backButton.click();
-        if (window.location.href === currentUrl) pushBackEntry();
-        return;
-      }
+    skipNextPop.current = true;
+    navigate(-1);
+  };
 
-      skipNextPop.current = true;
-      navigate(-1);
-    };
+  window.addEventListener("popstate", handleMobileBack);
 
-    window.addEventListener("popstate", handleMobileBack);
-
-    return () => {
-      window.removeEventListener("popstate", handleMobileBack);
-      window.visualViewport?.removeEventListener("resize", updateFullViewportHeight);
-    };
-  }, [location.key, navigate]);
+  return () => {
+    window.removeEventListener("popstate", handleMobileBack);
+    window.visualViewport?.removeEventListener("resize", updateFullViewportHeight);
+  };
+}, [location.key, navigate]);
 
   if (loading) {
     return <Loading />;
