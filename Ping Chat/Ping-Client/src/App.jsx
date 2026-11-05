@@ -1,5 +1,5 @@
 
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import HomePage from "./pages/HomePage.jsx";
@@ -16,8 +16,6 @@ import Calls from "./pages/Calls.jsx";
 
 function App() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const skipNextPop = useRef(false);
   const fullViewportHeight = useRef(window.visualViewport?.height || window.innerHeight);
 
   const authUser = useSelector((state) => state.authUser);
@@ -67,49 +65,55 @@ function App() {
     return () => clearTimeout(timeout);
   }, [token, dispatch]);
 
-useEffect(() => {
-  const pushBackEntry = () => window.history.pushState({ ...window.history.state, pingBackEntry: true }, "");
-  const updateFullViewportHeight = () => {
-    const height = window.visualViewport?.height || window.innerHeight;
-    if (height > fullViewportHeight.current) fullViewportHeight.current = height;
-  };
+  useEffect(() => {
+    const pushBackEntry = () =>
+      window.history.pushState(
+        { ...window.history.state, pingBackEntry: true },
+        "",
+      );
 
-  pushBackEntry();
-  window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
-
-  const handleMobileBack = () => {
-    if (skipNextPop.current) {
-      skipNextPop.current = false;
-      return;
-    }
+    const updateFullViewportHeight = () => {
+      const height = window.visualViewport?.height || window.innerHeight;
+      if (height > fullViewportHeight.current) {
+        fullViewportHeight.current = height;
+      }
+    };
 
     pushBackEntry();
+    window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
 
-    const viewport = window.visualViewport;
-    if (viewport && fullViewportHeight.current - viewport.height > 120) return;
+    const handleMobileBack = () => {
+      pushBackEntry();
 
-    const backButton = [...document.querySelectorAll("[data-mobile-back]")].find((element) => {
-      const style = window.getComputedStyle(element);
-      const rect = element.getBoundingClientRect();
-      return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
-    });
+      const viewport = window.visualViewport;
+      if (viewport && fullViewportHeight.current - viewport.height > 120) return;
 
-    if (backButton) {
-      backButton.click();
-      return;
-    }
+      const backButton = [...document.querySelectorAll("[data-mobile-back]")].find(
+        (element) => {
+          const style = window.getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return (
+            style.display !== "none" &&
+            style.visibility !== "hidden" &&
+            rect.width > 0 &&
+            rect.height > 0
+          );
+        },
+      );
 
-    skipNextPop.current = true;
-    navigate(-1);
-  };
+      backButton?.click();
+    };
 
-  window.addEventListener("popstate", handleMobileBack);
+    window.addEventListener("popstate", handleMobileBack);
 
-  return () => {
-    window.removeEventListener("popstate", handleMobileBack);
-    window.visualViewport?.removeEventListener("resize", updateFullViewportHeight);
-  };
-}, [location.key, navigate]);
+    return () => {
+      window.removeEventListener("popstate", handleMobileBack);
+      window.visualViewport?.removeEventListener(
+        "resize",
+        updateFullViewportHeight,
+      );
+    };
+  }, [location.key]);
 
   if (loading) {
     return <Loading />;
