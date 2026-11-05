@@ -11,7 +11,7 @@ import AudioVideoCallPage from "./pages/AudioVideoCallPage.jsx";
 import { Toaster } from "react-hot-toast";
 import { initializeAuth } from "./lib/auth.js";
 import Loading from "./components/Loading.jsx";
-import { setAuthLoading } from "./store/slice.js";
+import { setAuthLoading, setInfoUser, setSelectedUser } from "./store/slice.js";
 import Calls from "./pages/Calls.jsx";
 
 function App() {
@@ -30,8 +30,8 @@ function App() {
   const dispatch = useDispatch();
 
   const currentState = useRef({});
-  const homeBackPresses = useRef(0);
-  const allowExit = useRef(false);
+  const backPresses = useRef(0);
+  const backEntryInitialized = useRef(false);
 
   currentState.current = {
     pathname: location.pathname,
@@ -52,6 +52,7 @@ function App() {
         dispatch(setAuthLoading(false));
       }
     };
+
     verifyAuth();
   }, [dispatch]);
 
@@ -86,7 +87,7 @@ function App() {
   useEffect(() => {
     const pushBackEntry = () => {
       window.history.pushState(
-        { ...window.history.state, pingBackEntry: true },
+        { pingBackEntry: true },
         "",
         window.location.href,
       );
@@ -100,48 +101,14 @@ function App() {
       }
     };
 
-    const findBackButton = () =>
-      [...document.querySelectorAll("[data-mobile-back]")].find((element) => {
-        const style = window.getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-
-        return (
-          style.display !== "none" &&
-          style.visibility !== "hidden" &&
-          rect.width > 0 &&
-          rect.height > 0
-        );
-      });
-
-    pushBackEntry();
+    if (!backEntryInitialized.current) {
+      pushBackEntry();
+      backEntryInitialized.current = true;
+    }
 
     window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
 
     const handleMobileBack = (event) => {
-      if (allowExit.current) return;
-
-      event.stopImmediatePropagation();
-
-      const viewport = window.visualViewport;
-
-      // Let the keyboard close before handling app navigation.
-      if (
-        viewport &&
-        fullViewportHeight.current - viewport.height > 120
-      ) {
-        pushBackEntry();
-        return;
-      }
-
-      const backButton = findBackButton();
-
-      // Close the currently visible mobile panel first.
-      if (backButton) {
-        pushBackEntry();
-        backButton.click();
-        return;
-      }
-
       const {
         pathname,
         authUser: currentUser,
@@ -150,25 +117,47 @@ function App() {
         group: currentGroup,
       } = currentState.current;
 
-      // Do not interfere with other routes or unauthenticated screens.
-      if (pathname !== "/" || !currentUser) {
+      if (pathname !== "/" || !currentUser) return;
+
+      event.stopImmediatePropagation();
+
+      const viewport = window.visualViewport;
+
+      // Keyboard gets priority.
+      if (
+        viewport &&
+        fullViewportHeight.current - viewport.height > 120
+      ) {
+        pushBackEntry();
         return;
       }
 
-      // At Home, require three Back presses before allowing browser navigation.
-      if (!currentSelectedUser && !currentInfoUser && !currentGroup) {
-        homeBackPresses.current += 1;
-
-        if (homeBackPresses.current < 3) {
-          pushBackEntry();
-          return;
-        }
-
-        allowExit.current = true;
+      // Close RightSidebar first.
+      if (currentInfoUser) {
+        pushBackEntry();
+        dispatch(setInfoUser(false));
         return;
       }
 
-      pushBackEntry();
+      // Return from Chat to Home.
+      if (currentSelectedUser) {
+        pushBackEntry();
+        dispatch(setSelectedUser(null));
+        return;
+      }
+
+      // Do not change Group behavior.
+      if (currentGroup) {
+        pushBackEntry();
+        return;
+      }
+
+      // Allow exit after three Back presses at Home.
+      backPresses.current += 1;
+
+      if (backPresses.current < 3) {
+        pushBackEntry();
+      }
     };
 
     window.addEventListener("popstate", handleMobileBack, true);
@@ -180,11 +169,11 @@ function App() {
         updateFullViewportHeight,
       );
     };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (selectedUser || infoUser || location.pathname !== "/") {
-      homeBackPresses.current = 0;
+      backPresses.current = 0;
     }
   }, [selectedUser, infoUser, location.pathname]);
 
