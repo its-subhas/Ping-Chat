@@ -32,6 +32,7 @@ function App() {
   const currentState = useRef({});
   const backPresses = useRef(0);
   const backEntryInitialized = useRef(false);
+  const allowExit = useRef(false);
 
   currentState.current = {
     pathname: location.pathname,
@@ -87,7 +88,7 @@ function App() {
   useEffect(() => {
     const pushBackEntry = () => {
       window.history.pushState(
-        { pingBackEntry: true },
+        { ...window.history.state, pingBackEntry: true },
         "",
         window.location.href,
       );
@@ -109,6 +110,8 @@ function App() {
     window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
 
     const handleMobileBack = (event) => {
+      if (allowExit.current) return;
+
       const {
         pathname,
         authUser: currentUser,
@@ -123,7 +126,7 @@ function App() {
 
       const viewport = window.visualViewport;
 
-      // Keyboard gets priority.
+      // Let the keyboard close first.
       if (
         viewport &&
         fullViewportHeight.current - viewport.height > 120
@@ -132,32 +135,45 @@ function App() {
         return;
       }
 
-      // Close RightSidebar first.
+      // RightSidebar -> Chat.
       if (currentInfoUser) {
         pushBackEntry();
+
+        currentState.current.infoUser = false;
         dispatch(setInfoUser(false));
+
         return;
       }
 
-      // Return from Chat to Home.
+      // Chat -> Home.
       if (currentSelectedUser) {
         pushBackEntry();
+
+        currentState.current.selectedUser = null;
         dispatch(setSelectedUser(null));
+
         return;
       }
 
-      // Do not change Group behavior.
+      // Preserve existing Group behavior.
       if (currentGroup) {
         pushBackEntry();
         return;
       }
 
-      // Allow exit after three Back presses at Home.
+      // Home -> Exit after three Back presses.
       backPresses.current += 1;
 
       if (backPresses.current < 3) {
         pushBackEntry();
+        return;
       }
+
+      allowExit.current = true;
+
+      setTimeout(() => {
+        window.history.back();
+      }, 0);
     };
 
     window.addEventListener("popstate", handleMobileBack, true);
