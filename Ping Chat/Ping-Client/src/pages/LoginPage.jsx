@@ -4,32 +4,17 @@ import { googleLogin, login } from "../lib/auth.js";
 import { useDispatch } from "react-redux";
 import { setLoginLoading } from "../store/slice.js";
 
-// Login and signup page component.
 function LoginPage() {
-  // Controls whether the form is in Sign Up or Login mode.
   const [currentState, setCurrentState] = useState("Login");
-
-  // Stores the user's full name.
   const [fullName, setFullName] = useState("");
-
-  // Stores the user's email address.
   const [email, setEmail] = useState("");
-
-  // Stores the user's password.
   const [password, setPassword] = useState("");
-
-  // Stores the user's bio during the second signup step.
   const [bio, setBio] = useState("");
-
-  // Stores the terms and privacy policy checkbox state.
   const [tick, setTick] = useState("");
-
-  // Controls whether the signup form has moved to the bio step.
   const [isDataSubmited, setIsDataSubmited] = useState(false);
 
   const dispatch = useDispatch();
 
-  // Handles form submission and moves signup to the next step.
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
@@ -45,24 +30,23 @@ function LoginPage() {
       dispatch,
     );
     dispatch(setLoginLoading(false));
-    return;
   };
 
-  // Handles Google authentication.
   const handleGoogleAuth = () => {
     googleLogin();
   };
 
   return (
-    // Main responsive login page container.
-    <div className="min-h-screen w-full px-4 py-6 sm:px-6 md:px-8 flex items-center justify-center bg-cover bg-center backdrop-blur-xs">
-      <div className="w-full max-w-5xl flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 lg:gap-20">
-        {/* Ping logo and application name. */}
-        <div className="flex flex-col items-center justify-center gap-3 sm:gap-5">
+    <div
+      className="w-full flex items-center justify-center overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 md:px-8"
+      style={{ minHeight: "var(--chat-viewport-height, 100dvh)" }}
+    >
+      <div className="w-full max-w-5xl flex flex-col md:flex-row items-center justify-center gap-5 sm:gap-8 md:gap-12 lg:gap-20">
+        <div className="flex flex-col items-center justify-center gap-2 sm:gap-5 shrink-0">
           <img
             src={assets.logo}
             alt="Ping logo"
-            className="w-24 sm:w-32 md:w-40 lg:w-48 h-auto"
+            className="w-16 sm:w-32 md:w-40 lg:w-48 h-auto"
           />
 
           <h1 className="font-medium text-3xl sm:text-4xl md:text-5xl text-white text-center">
@@ -70,12 +54,10 @@ function LoginPage() {
           </h1>
         </div>
 
-        {/* Login and signup form. */}
         <form
           onSubmit={onSubmitHandler}
-          className="w-full max-w-md sm:max-w-lg md:max-w-md border-2 bg-white/8 text-white border-gray-500 p-5 sm:p-6 md:p-7 lg:p-8 flex flex-col rounded-xl shadow-lg gap-4"
+          className="w-full max-w-md sm:max-w-lg md:max-w-md border-2 bg-white/8 text-white border-gray-500 p-4 sm:p-6 md:p-7 lg:p-8 flex flex-col rounded-xl shadow-lg gap-3 sm:gap-4"
         >
-          {/* Form heading and back button for the second signup step. */}
           <h2 className="font-medium text-xl sm:text-2xl flex justify-between items-center gap-3">
             {currentState}
 
@@ -89,7 +71,6 @@ function LoginPage() {
             )}
           </h2>
 
-          {/* Full name field shown only during the first signup step. */}
           {currentState === "Sign Up" && !isDataSubmited && (
             <input
               onChange={(e) => setFullName(e.target.value)}
@@ -101,7 +82,6 @@ function LoginPage() {
             />
           )}
 
-          {/* Email and password fields shown during the first step. */}
           {!isDataSubmited && (
             <>
               <input
@@ -124,7 +104,6 @@ function LoginPage() {
             </>
           )}
 
-          {/* Bio field shown during the second signup step. */}
           {currentState === "Sign Up" && isDataSubmited && (
             <textarea
               onChange={(e) => setBio(e.target.value)}
@@ -136,7 +115,6 @@ function LoginPage() {
             />
           )}
 
-          {/* Submit button with text based on the current form state. */}
           <button
             type="submit"
             className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer text-sm sm:text-base hover:opacity-90 transition"
@@ -148,7 +126,6 @@ function LoginPage() {
               : "Login"}
           </button>
 
-          {/* Google authentication section shown on the first step. */}
           {!isDataSubmited && (
             <>
               <div className="flex items-center gap-2 sm:gap-3">
@@ -157,13 +134,11 @@ function LoginPage() {
                 <div className="h-px bg-gray-500 flex-1" />
               </div>
 
-              {/* Google authentication button. */}
               <button
                 type="button"
                 onClick={handleGoogleAuth}
                 className="w-full py-2.5 sm:py-3 bg-white text-gray-700 rounded-md cursor-pointer flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base hover:bg-gray-100 transition"
               >
-                {/* Google logo SVG. */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 48 48"
@@ -192,7 +167,6 @@ function LoginPage() {
             </>
           )}
 
-          {/* Terms and privacy policy checkbox for signup. */}
           {currentState !== "Login" && !isDataSubmited && (
             <div className="flex items-start justify-center text-center gap-2 text-xs sm:text-sm text-gray-500">
               <input
@@ -207,7 +181,6 @@ function LoginPage() {
             </div>
           )}
 
-          {/* Switches between login and signup modes. */}
           {!isDataSubmited && (
             <div className="flex flex-col gap-2 items-center justify-center text-center">
               {currentState === "Sign Up" ? (
