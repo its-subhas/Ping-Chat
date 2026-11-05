@@ -66,11 +66,12 @@ function App() {
   }, [token, dispatch]);
 
   useEffect(() => {
-    const pushBackEntry = () =>
+    const pushBackEntry = () => {
       window.history.pushState(
         { ...window.history.state, pingBackEntry: true },
         "",
       );
+    };
 
     const updateFullViewportHeight = () => {
       const height = window.visualViewport?.height || window.innerHeight;
@@ -80,18 +81,24 @@ function App() {
     };
 
     pushBackEntry();
+
     window.visualViewport?.addEventListener("resize", updateFullViewportHeight);
 
-    const handleMobileBack = () => {
+    const handleMobileBack = (event) => {
+      event.stopImmediatePropagation();
+
       pushBackEntry();
 
       const viewport = window.visualViewport;
-      if (viewport && fullViewportHeight.current - viewport.height > 120) return;
+      if (viewport && fullViewportHeight.current - viewport.height > 120) {
+        return;
+      }
 
       const backButton = [...document.querySelectorAll("[data-mobile-back]")].find(
         (element) => {
           const style = window.getComputedStyle(element);
           const rect = element.getBoundingClientRect();
+
           return (
             style.display !== "none" &&
             style.visibility !== "hidden" &&
@@ -104,10 +111,10 @@ function App() {
       backButton?.click();
     };
 
-    window.addEventListener("popstate", handleMobileBack);
+    window.addEventListener("popstate", handleMobileBack, true);
 
     return () => {
-      window.removeEventListener("popstate", handleMobileBack);
+      window.removeEventListener("popstate", handleMobileBack, true);
       window.visualViewport?.removeEventListener(
         "resize",
         updateFullViewportHeight,
