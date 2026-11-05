@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { updateProfile, logout } from "../lib/auth.js";
@@ -68,6 +69,21 @@ function ProfilePage() {
     setBio(authUser.bio || "");
   };
 
+  useEffect(() => {
+    if (!profile) return;
+
+    const handleBack = (event) => {
+      event.stopImmediatePropagation();
+      resetProfile();
+    };
+
+    window.addEventListener("popstate", handleBack, true);
+
+    return () => {
+      window.removeEventListener("popstate", handleBack, true);
+    };
+  }, [profile]);
+
   return !profile ? (
     <div
       className="w-full flex items-center justify-center overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 md:px-10"
@@ -111,7 +127,7 @@ function ProfilePage() {
               >
                 <path
                   fillRule="evenodd"
-                  d="M9.401 3.003c.807-1.026 2.391-1.026 3.198 0l.854 1.086 1.376-.201c1.3-.19 2.486.759 2.613 2.066l.135 1.384 1.274.558c1.203.527 1.673 1.97 1.037 3.12l-.674 1.219.674 1.219c.636 1.15.166 2.593-1.037 3.12l-1.274.558-.135 1.384c-.127 1.307-1.313 2.256-2.613 2.066l-1.376-.201-.854 1.086c-.807 1.026-2.391 1.026-3.198 0l-.854-1.086-1.376.201c-1.3.19-2.486-.759-2.613-2.066l-.135-1.384-1.274-.558c-1.203-.527-1.673-1.97-1.037-3.12l.674-1.219-.674-1.219c-.636-1.15-.166-2.593 1.037-3.12l1.274-.558.135-1.384c.127-1.307 1.313-2.256 2.613-2.066l1.376.201.854-1.086Zm4.793 7.873a.75.75 0 0 0-1.116-1.002l-2.81 3.13-1.374-1.374a.75.75 0 1 0-1.06 1.06l1.934 1.935a.75.75 0 0 0 1.088-.029l3.338-3.72Z"
+                  d="M9.401 3.003c.807-1.026 2.391-1.026 3.198 0l.854 1.086 1.376-.201c1.3-.19 2.486.759 2.613 2.066l.135 1.384 1.274.558c1.203.527 1.673 1.97 1.037 3.12l-.674 1.219.674 1.219c.636 1.15.166 2.593-1.037 3.12l-1.274.558-.135 1.384c-.127 1.307-1.313 2.256-2.613 2.066l-1.376-.201-.854 1.086c-.807 1.026-2.391-1.026-3.198 0l-.854-1.086-1.376.201c-1.3.19-2.486-.759-2.613-2.066l-.135-1.384-1.274-.558c-1.203-.527-1.673-1.97-1.037-3.12l.674-1.219-.674-1.219c-.636-1.15-.166-2.593 1.037-3.12l1.274-.558.135-1.384c.127-1.307 1.313-2.256 2.613-2.066l1.376.201.854-1.086Zm4.793 7.873a.75.75 0 0 0-1.116-1.002l-2.81 3.13-1.374-1.374a.75.75 0 1 0-1.06 1.06l1.934 1.935a.75.75 0 0 0 1.088-.029l3.338-3.72Z"
                   clipRule="evenodd"
                 />
               </svg>
@@ -129,7 +145,14 @@ function ProfilePage() {
           </p>
 
           <button
-            onClick={() => setProfile(true)}
+            onClick={() => {
+              window.history.pushState(
+                { ...window.history.state, editProfile: true },
+                "",
+                window.location.href,
+              );
+              setProfile(true);
+            }}
             className="mt-5 sm:mt-6 w-full max-w-xs px-5 py-2 sm:py-2.5 text-sm sm:text-base rounded-full bg-gradient-to-r from-purple-400 to-violet-600 text-white cursor-pointer hover:from-purple-500 hover:to-violet-700 transition"
           >
             Edit Profile
