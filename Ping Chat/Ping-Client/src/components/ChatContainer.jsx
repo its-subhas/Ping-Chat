@@ -694,6 +694,7 @@ function ChatContainer() {
 
           {/* Mobile back button. */}
           <img
+            data-mobile-back
             onClick={() => {
               dispatch(setSelectedUser(null));
               dispatch(setShowEmojiPicker(false));
@@ -755,6 +756,7 @@ function ChatContainer() {
                             {openMenu === messageId && (
                               <button
                                 type="button"
+                                onPointerDown={(e) => e.preventDefault()}
                                 onClick={() => {
                                   handleDeleteMessages(messageId);
                                   setOpenMenu(null);
@@ -767,6 +769,7 @@ function ChatContainer() {
 
                             <button
                               type="button"
+                              onPointerDown={(e) => e.preventDefault()}
                               onClick={() =>
                                 setOpenMenu(
                                   openMenu === messageId ? null : messageId,
@@ -1017,6 +1020,7 @@ function ChatContainer() {
           {/* Emoji button on the left */}
           <button
             type="button"
+            onPointerDown={(e) => e.preventDefault()}
             onClick={() => {
               dispatch(setShowEmojiPicker(!showEmojiPicker));
             }}
@@ -1088,6 +1092,7 @@ function ChatContainer() {
           {selectedUser._id === "gemini_001" && (
             <button
               type="button"
+              onPointerDown={(e) => e.preventDefault()}
               onClick={handleNewGeminiChat}
               title="reset"
               className="shrink-0 p-1.5 sm:p-2 cursor-pointer"
@@ -1111,6 +1116,7 @@ function ChatContainer() {
           {selectedUser._id !== "gemini_001" && (
             <button
               type="button"
+              onPointerDown={(e) => e.preventDefault()}
               onClick={handleToggleAIAutoReply}
               title="Toggle AI Auto-Reply"
               className="shrink-0 p-1.5 sm:p-2 cursor-pointer"
@@ -1139,6 +1145,7 @@ function ChatContainer() {
           {/* Image upload button. */}
           <label htmlFor="image" className="shrink-0">
             <img
+              onPointerDown={(e) => e.preventDefault()}
               src={assets.sendImage}
               alt="image"
               className="w-5 h-5 mr-1 sm:mr-2 cursor-pointer"
@@ -1149,6 +1156,7 @@ function ChatContainer() {
         {/* Send message button. */}
         <img
           src={assets.send}
+          onPointerDown={(e) => e.preventDefault()}
           onClick={handleSendMessage}
           alt="send"
           className="w-8 h-8 sm:w-9 sm:h-9 p-2 cursor-pointer bg-green-500 rounded-full shrink-0"
