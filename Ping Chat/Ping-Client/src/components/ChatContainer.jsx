@@ -1013,7 +1013,7 @@ function ChatContainer() {
           </button>
 
           <input
-            ref={inputRef}
+            {/* ref={inputRef} */}
             type="text"
             onChange={(e) => {
               setInput(e.target.value);
