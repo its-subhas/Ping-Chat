@@ -31,6 +31,7 @@ function RightSidebar() {
       {/* Back button */}
       <div className="h-12 sm:h-14 flex items-center justify-end px-3 sm:px-4 md:hidden shrink-0">
         <img
+          data-mobile-back
           onClick={() => {
             dispatch(setInfoUser(false));
             dispatch(setShowEmojiPicker(false));
