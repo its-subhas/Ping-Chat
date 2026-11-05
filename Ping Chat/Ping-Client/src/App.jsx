@@ -67,7 +67,7 @@ function App() {
 
   return (
     <div
-      className="w-full min-h-screen bg-cover bg-center bg-no-repeat"
+      className="w-full min-h-dvh bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/background.jpg')" }}
     >
       <Toaster />
