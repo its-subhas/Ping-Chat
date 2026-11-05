@@ -89,7 +89,7 @@ function ChatContainer() {
   const geminiControllerRef = useRef(null);
   const geminiRequestIdRef = useRef(0);
   const geminiMessagesRef = useRef(geminiMessages);
-  const inputRef = useRef(null);
+  // const inputRef = useRef(null);
 
   useEffect(() => {
     geminiMessagesRef.current = geminiMessages;
@@ -969,14 +969,14 @@ function ChatContainer() {
   <div
     className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer"
     onPointerDown={(e) => {
-      if (e.target.closest("input")) return;
+      // if (e.target.closest("input")) return;
       e.preventDefault();
     }}
   >
     <EmojiPicker
       onEmojiClick={(emojiData) => {
         setInput((prev) => prev + emojiData.emoji);
-        inputRef.current?.focus();
+        // inputRef.current?.focus();
       }}
       searchDisabled={false}
       autoFocusSearch={false}
