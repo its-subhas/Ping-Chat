@@ -2,7 +2,7 @@ import axios from "axios";
 import store from "../store/store.js";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: "",
   withCredentials: true,
 });
 
