@@ -12,6 +12,7 @@ import { Toaster } from "react-hot-toast";
 import { initializeAuth } from "./lib/auth.js";
 import Loading from "./components/Loading.jsx";
 import { setAuthLoading, setInfoUser, setSelectedUser } from "./store/slice.js";
+import { setShowEmojiPicker } from "./store/ChatSlice.js";
 import Calls from "./pages/Calls.jsx";
 
 function App() {
@@ -141,6 +142,7 @@ function App() {
 
         currentState.current.infoUser = false;
         dispatch(setInfoUser(false));
+        dispatch(setShowEmojiPicker(false));
 
         return;
       }
@@ -151,6 +153,7 @@ function App() {
 
         currentState.current.selectedUser = null;
         dispatch(setSelectedUser(null));
+        dispatch(setShowEmojiPicker(false));
 
         return;
       }
