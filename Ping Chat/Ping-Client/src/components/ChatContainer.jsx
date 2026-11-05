@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { assets } from "../assets/assets";
 import { formatMessageTime } from "../lib/utils";
@@ -16,9 +17,7 @@ import {
   addGeminiMessage,
   clearGeminiMessages,
 } from "../store/slice";
-
 import { setAuthUser } from "../store/AuthSlice";
-
 import {
   deleteMessage,
   getMessages,
@@ -35,15 +34,10 @@ import {
 } from "../lib/geminiImages.js";
 import { setMessages, setShowEmojiPicker } from "../store/ChatSlice.js";
 import { toast } from "react-hot-toast";
-
 import { getSocket } from "../lib/auth.js";
 
-// Chat container component for displaying messages and chat controls.
 function ChatContainer() {
-  // Used to navigate between routes.
   const navigate = useNavigate();
-
-  // Keeps automatic scrolling inside the message history, never the whole page.
   const messagesContainerRef = useRef(null);
 
   const scrollToBottom = (behavior = "smooth") => {
@@ -57,7 +51,6 @@ function ChatContainer() {
     }
   };
 
-  // Gets the selected user from Redux.
   const selectedUser = useSelector((state) => state.selectedUser);
   const messages = useSelector((state) => state.messages);
   const authUser = useSelector((state) => state.authUser);
@@ -65,16 +58,9 @@ function ChatContainer() {
   const showEmojiPicker = useSelector((state) => state.showEmojiPicker);
   const incoming = useSelector((state) => state.incoming);
   const users = useSelector((state) => state.users);
-
-  // Stores the currently selected user for the info.
   const infoUser = useSelector((state) => state.infoUser);
-
-  // Gets the audio call state from Redux.
   const audioCall = useSelector((state) => state.audioCall);
-
-  // Gets the video call state from Redux.
   const videoCall = useSelector((state) => state.videoCall);
-
   const geminiMessages = useSelector((state) => state.geminiMessages);
 
   const [geminiLoading, setGeminiLoading] = useState(false);
@@ -85,24 +71,16 @@ function ChatContainer() {
     ? geminiMessages.length > 0
     : messages.length > 0;
 
-  // Used to indicate AI chat active or not.
-  // const [aiChat, setAiChat] = useState(false);
-
-  // Used to dispatch Redux actions.
   const dispatch = useDispatch();
 
   useSubscribeToMessages(selectedUser, dispatch, authUser);
 
   const [openMenu, setOpenMenu] = useState(null);
-
   const menuRef = useRef(null);
-
   const [input, setInput] = useState("");
-
   const [typing, setTyping] = useState(false);
 
   const socket = getSocket();
-
   const typingTimeout = useRef(null);
 
   const geminiBatchRef = useRef([]);
@@ -233,6 +211,7 @@ function ChatContainer() {
           controller.signal.aborted
         )
           return;
+
         const imageResults = await Promise.all(
           batch.map(async (item) => {
             try {
@@ -502,12 +481,10 @@ function ChatContainer() {
     };
   }, []);
 
-  // Automatically scrolls only the message history to the latest message.
   useEffect(() => {
     requestAnimationFrame(() => scrollToBottom());
   }, [messages, geminiMessages, typing, geminiLoading]);
 
-  // Keeps the latest message visible when the mobile keyboard changes the viewport.
   useEffect(() => {
     const viewport = window.visualViewport;
     if (!viewport) return;
@@ -594,7 +571,6 @@ function ChatContainer() {
     return () => {
       socket.off("incomingAudioCall", handleIncomingAudioCall);
       socket.off("incomingVideoCall", handleIncomingVideoCall);
-      // dispatch(setIncoming(false));
     };
   }, [authUser?._id, socket, dispatch, audioCall, videoCall, users]);
 
@@ -605,13 +581,11 @@ function ChatContainer() {
   }, [incoming, navigate]);
 
   return selectedUser ? (
-    // Main chat container for the selected user.
     <div
       className={`h-full min-h-0 min-w-0 overflow-hidden relative flex flex-col backdrop-blur-lg ${
         infoUser ? "max-md:hidden" : ""
       }`}
     >
-      {/* Chat header with user information and call controls. */}
       <div className="flex items-center justify-between gap-2 sm:gap-4 py-3 px-3 sm:px-4 border-b border-stone-500 shrink-0">
         <div
           className="flex gap-2 items-center justify-center min-w-0 cursor-pointer"
@@ -627,7 +601,6 @@ function ChatContainer() {
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover shrink-0"
           />
 
-          {/* Selected user's name and online status. */}
           <p className="flex-1 min-w-0 text-base sm:text-lg text-white flex items-center gap-2 truncate">
             <span className="truncate">{selectedUser?.fullName}</span>
             {(isGemini || onlineUser.includes(selectedUser?._id)) && (
@@ -637,7 +610,6 @@ function ChatContainer() {
         </div>
 
         <div className="flex items-center justify-center gap-3 sm:gap-5 shrink-0">
-          {/* Audio and video call buttons. */}
           {selectedUser._id !== "gemini_001" && (
             <>
               <img
@@ -692,19 +664,15 @@ function ChatContainer() {
             </>
           )}
 
-          {/* Mobile back button. */}
+          {/* Mobile back button */}
           <img
             data-mobile-back
-            onClick={() => {
-              dispatch(setSelectedUser(null));
-              dispatch(setShowEmojiPicker(false));
-            }}
+            onClick={() => window.history.back()}
             className="md:hidden w-5 h-5 cursor-pointer shrink-0"
             src={assets.arrow}
             alt="back"
           />
 
-          {/* Desktop info button. */}
           <img
             onClick={() => dispatch(setInfoUser(!infoUser))}
             src={assets.info}
@@ -713,8 +681,6 @@ function ChatContainer() {
           />
         </div>
       </div>
-
-      {/* Messages section. */}
 
       {hasMessages ? (
         <div
@@ -747,7 +713,6 @@ function ChatContainer() {
                           isSent ? "justify-end" : ""
                         }`}
                       >
-                        {/* Three dots + Delete menu */}
                         {isSent && (
                           <div
                             ref={openMenu === messageId ? menuRef : null}
@@ -789,7 +754,6 @@ function ChatContainer() {
                           </div>
                         )}
 
-                        {/* Message */}
                         {msg.image ? (
                           <img
                             src={msg.image}
@@ -818,7 +782,6 @@ function ChatContainer() {
                         )}
                       </div>
 
-                      {/* Message timestamp */}
                       <div
                         className={`flex items-center gap-1 text-gray-500 text-[10px] sm:text-xs mt-1 ${
                           isSent ? "justify-end" : "justify-start"
@@ -846,7 +809,6 @@ function ChatContainer() {
                       </div>
                     </div>
 
-                    {/* Current user's avatar */}
                     {isSent && (
                       <img
                         src={authUser.profilePic || assets.avtar}
@@ -915,7 +877,7 @@ function ChatContainer() {
                             strokeWidth="1.8"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className={"w-4 h-4 text-green-400"}
+                            className="w-4 h-4 text-green-400"
                           >
                             <path d="m1 8 4 4L14 3" />
                             <path d="m8 8 4 4L21 3" />
@@ -969,7 +931,6 @@ function ChatContainer() {
               </div>
             </div>
           )}
-
         </div>
       ) : (
         <div
@@ -1000,10 +961,8 @@ function ChatContainer() {
         </div>
       )}
 
-      {/* Message input section. */}
       <div className="shrink-0 flex items-center gap-2 sm:gap-3 p-2 sm:p-1">
         <div className="relative min-w-0 flex-1 flex items-center bg-gray-100/12 px-2 sm:px-3 rounded-full border border-gray-700/50">
-          {/* Emoji picker */}
           {showEmojiPicker && (
             <div className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer">
               <EmojiPicker
@@ -1017,7 +976,6 @@ function ChatContainer() {
             </div>
           )}
 
-          {/* Emoji button on the left */}
           <button
             type="button"
             onPointerDown={(e) => e.preventDefault()}
@@ -1043,7 +1001,6 @@ function ChatContainer() {
             </svg>
           </button>
 
-          {/* Message text input. */}
           <input
             type="text"
             onChange={(e) => {
@@ -1088,7 +1045,6 @@ function ChatContainer() {
             className="min-w-0 flex-1 text-xs sm:text-sm p-2.5 sm:p-3 bg-transparent border-none outline-none text-white placeholder-gray-400"
           />
 
-          {/* Reset assistant chat button. */}
           {selectedUser._id === "gemini_001" && (
             <button
               type="button"
@@ -1133,7 +1089,6 @@ function ChatContainer() {
             </button>
           )}
 
-          {/* Hidden image upload input. */}
           <input
             onChange={handleSendImage}
             type="file"
@@ -1142,7 +1097,6 @@ function ChatContainer() {
             hidden
           />
 
-          {/* Image upload button. */}
           <label htmlFor="image" className="shrink-0">
             <img
               onPointerDown={(e) => e.preventDefault()}
@@ -1153,7 +1107,6 @@ function ChatContainer() {
           </label>
         </div>
 
-        {/* Send message button. */}
         <img
           src={assets.send}
           onPointerDown={(e) => e.preventDefault()}
@@ -1164,10 +1117,8 @@ function ChatContainer() {
       </div>
     </div>
   ) : (
-    // Empty state shown when no user is selected.
     <div className="h-full min-w-0 flex flex-col items-center justify-center gap-2 text-gray-500 px-4 text-center">
       <img src={assets.logo} alt="message" className="w-12 sm:w-16 h-auto" />
-
       <p className="text-base sm:text-lg font-medium text-white">Start Chat!</p>
     </div>
   );
