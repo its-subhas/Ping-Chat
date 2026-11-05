@@ -90,6 +90,41 @@ function ChatContainer() {
   const geminiRequestIdRef = useRef(0);
   const geminiMessagesRef = useRef(geminiMessages);
   const inputRef = useRef(null);
+  const emojiPickerRef = useRef(null);
+const keyboardOwnerRef = useRef(null);
+const previousKeyboardOwnerRef = useRef(null);
+  const handleMessageInputFocus = () => {
+  keyboardOwnerRef.current = "message";
+  previousKeyboardOwnerRef.current = null;
+};
+
+const handleMessageInputBlur = (e) => {
+  if (!emojiPickerRef.current?.contains(e.relatedTarget)) {
+    if (keyboardOwnerRef.current === "message") {
+      keyboardOwnerRef.current = null;
+    }
+  }
+};
+
+const handleEmojiPickerFocus = (e) => {
+  if (e.target.tagName === "INPUT" && e.target !== inputRef.current) {
+    previousKeyboardOwnerRef.current = keyboardOwnerRef.current;
+    keyboardOwnerRef.current = "emoji";
+  }
+};
+
+const handleEmojiPickerBlur = (e) => {
+  if (e.target.tagName !== "INPUT" || e.target === inputRef.current) return;
+
+  if (previousKeyboardOwnerRef.current === "message") {
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  } else {
+    keyboardOwnerRef.current = null;
+    previousKeyboardOwnerRef.current = null;
+  }
+};
 
   useEffect(() => {
     geminiMessagesRef.current = geminiMessages;
@@ -965,9 +1000,12 @@ function ChatContainer() {
       <div className="shrink-0 flex items-center gap-2 sm:gap-3 p-2 sm:p-1">
         <div className="relative min-w-0 flex-1 flex items-center bg-gray-100/12 px-2 sm:px-3 rounded-full border border-gray-700/50">
 
-      {showEmojiPicker && (
+     {showEmojiPicker && (
   <div
+    ref={emojiPickerRef}
     className="absolute bottom-full left-0 mb-3 z-50 cursor-pointer"
+    onFocusCapture={handleEmojiPickerFocus}
+    onBlurCapture={handleEmojiPickerBlur}
     onPointerDown={(e) => {
       if (!e.target.closest("input")) {
         e.preventDefault();
@@ -1015,6 +1053,8 @@ function ChatContainer() {
           <input
              ref={inputRef} 
             type="text"
+            onFocus={handleMessageInputFocus}
+onBlur={handleMessageInputBlur}
             onChange={(e) => {
               setInput(e.target.value);
 
