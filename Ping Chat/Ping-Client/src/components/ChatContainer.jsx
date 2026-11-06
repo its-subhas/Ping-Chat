@@ -1064,9 +1064,9 @@ useEffect(() => {
             </svg>
           </button>
 
-          <button hidden >
-            {backHelper ? "Back-On": "Back-Off"}
-          </button>
+         <button hidden={backHelper}>
+  {backHelper ? "On" : "Off"}
+</button>
 
           <input
              ref={inputRef} 
