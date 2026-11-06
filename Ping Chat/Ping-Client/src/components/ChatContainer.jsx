@@ -102,7 +102,7 @@ messageCacheRef.current = messageCache;
   const geminiRequestIdRef = useRef(0);
   const geminiMessagesRef = useRef(geminiMessages);
   const inputRef = useRef(null);
-  const chatContainerRef = useRef(null);
+ 
 
   useEffect(() => {
     geminiMessagesRef.current = geminiMessages;
@@ -628,30 +628,13 @@ useEffect(() => {
     }
   }, [incoming, navigate]);
 
-useEffect(() => {
-  if (!selectedUser?._id) {
-    dispatch(setBackHelper(false));
-    return;
-  }
+   console.log("Back Helper: ", backHelper);
 
-  dispatch(setBackHelper(true));
 
-  const container = chatContainerRef.current;
-
-  if (container) {
-    const touchEvent = new Event("touchstart", {
-      bubbles: true,
-      cancelable: true,
-    });
-
-    container.dispatchEvent(touchEvent);
-  }
-}, [selectedUser?._id, dispatch]);
 
   return selectedUser ? (
     <div
-   ref={chatContainerRef}
-  onTouchStart={() => dispatch(setBackHelper(true))}
+      
       className={`h-full min-h-0 min-w-0 overflow-hidden relative flex flex-col backdrop-blur-lg ${
         infoUser ? "max-md:hidden" : ""
       }`}
