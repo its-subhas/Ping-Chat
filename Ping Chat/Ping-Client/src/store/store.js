@@ -44,6 +44,7 @@ const appReducer = combineReducers({
 
   // Chat
 
+  backHelper: backHelperSlice.reducer,
   geminiMessages: geminiMessagesSlice.reducer,
   messages: messagesSlice.reducer,
   messageCache: messageCacheSlice.reducer,
