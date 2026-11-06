@@ -714,6 +714,7 @@ useEffect(() => {
 
           {/* Mobile back button */}
           <img
+            dispatch(setBackHelper(false));
             data-mobile-back
             onClick={() => window.history.back()}
             className="md:hidden w-5 h-5 cursor-pointer shrink-0"
@@ -1064,7 +1065,7 @@ useEffect(() => {
             </svg>
           </button>
 
-         <button hidden={backHelper}>
+         <button hidden={!backHelper}>
   {backHelper ? "On" : "Off"}
 </button>
 
