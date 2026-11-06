@@ -23,6 +23,7 @@ import {
   showEmojiPickerSlice,
   unseenMessagesSlice,
   usersSlice,
+  backHelperSlice,
 } from "./ChatSlice";
 
 const appReducer = combineReducers({
