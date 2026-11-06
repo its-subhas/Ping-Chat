@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { assets } from "../assets/assets";
 import { setInfoUser, setSelectedUser } from "../store/slice";
-import { setShowEmojiPicker } from "../store/ChatSlice";
+import { setShowEmojiPicker, setBackHelper } from "../store/ChatSlice";
 
 function RightSidebar() {
   const selectedUser = useSelector((state) => state.selectedUser);
@@ -31,6 +31,7 @@ function RightSidebar() {
       <div className="h-12 sm:h-14 flex items-center justify-end px-3 sm:px-4 md:hidden shrink-0">
         <img
           data-mobile-back
+          dispatch(setBackHelper(false));
           onClick={() => window.history.back()}
           src={assets.arrow}
           alt="back"
