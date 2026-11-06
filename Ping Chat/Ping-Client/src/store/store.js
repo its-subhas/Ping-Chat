@@ -19,6 +19,7 @@ import {
 import { authUserSlice, onlineUserSlice, tokenSlice } from "./AuthSlice";
 import {
   messagesSlice,
+  messageCacheSlice,
   showEmojiPickerSlice,
   unseenMessagesSlice,
   usersSlice,
@@ -45,6 +46,7 @@ const appReducer = combineReducers({
 
   geminiMessages: geminiMessagesSlice.reducer,
   messages: messagesSlice.reducer,
+  messageCache: messageCacheSlice.reducer,
   unseenMessages: unseenMessagesSlice.reducer,
   users: usersSlice.reducer,
   showEmojiPicker: showEmojiPickerSlice.reducer,
