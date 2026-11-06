@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { assets } from "../assets/assets";
 import { formatMessageTime } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import EmojiPicker from "emoji-picker-react";
 import {
   setaudioCall,
@@ -31,7 +31,11 @@ import {
   fileToBase64,
   clearGeminiImages,
 } from "../lib/geminiImages.js";
-import { setMessages, setShowEmojiPicker } from "../store/ChatSlice.js";
+import {
+  setMessages,
+  setShowEmojiPicker,
+  incrementUnseenMessage,
+} from "../store/ChatSlice.js";
 import { toast } from "react-hot-toast";
 import { getSocket } from "../lib/auth.js";
 
@@ -71,6 +75,7 @@ function ChatContainer() {
     : messages.length > 0;
 
   const dispatch = useDispatch();
+  const store = useStore();
 
   useSubscribeToMessages(selectedUser, dispatch, authUser);
 
@@ -253,21 +258,26 @@ function ChatContainer() {
         )
           return;
 
-        if (response?.success) {
-          completed = true;
+if (response?.success) {
+  completed = true;
 
-          if (response.reply) {
-            dispatch(
-              addGeminiMessage({
-                id: crypto.randomUUID(),
-                role: "gemini",
-                text: response.reply,
-                imageUrl: null,
-                createdAt: new Date().toISOString(),
-              }),
-            );
-          }
-        }
+  if (response.reply) {
+    dispatch(
+      addGeminiMessage({
+        id: crypto.randomUUID(),
+        role: "gemini",
+        text: response.reply,
+        imageUrl: null,
+        createdAt: new Date().toISOString(),
+      }),
+    );
+
+    if (store.getState().selectedUser?._id !== "gemini_001") {
+      dispatch(incrementUnseenMessage("gemini_001"));
+    }
+  }
+}
+        
       } finally {
         if (requestId === geminiRequestIdRef.current) {
           if (!completed && !controller.signal.aborted) {
