@@ -166,7 +166,7 @@ onClick={() => {
               </p>
             </div>
 {(unseenMessages?.gemini_001 || 0) > 0 && (
-  <p className="shrink-0 text-[10px] sm:text-xs h-5 min-w-5 px-1 flex justify-center items-center rounded-full bg-violet-500/50">
+  <p className="shrink-0 text-[10px] sm:text-xs h-5 min-w-5 px-1 flex justify-center items-center rounded-full bg-[#0891B2]/50">
     {unseenMessages.gemini_001}
   </p>
 )}
