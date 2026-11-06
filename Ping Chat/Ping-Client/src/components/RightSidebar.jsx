@@ -30,8 +30,8 @@ function RightSidebar() {
     <div className="bg-[#8185B2]/10 text-white w-full h-full min-w-0 flex flex-col overflow-hidden">
       <div className="h-12 sm:h-14 flex items-center justify-end px-3 sm:px-4 md:hidden shrink-0">
         <img
-          data-mobile-back
           dispatch(setBackHelper(false));
+          data-mobile-back
           onClick={() => window.history.back()}
           src={assets.arrow}
           alt="back"
