@@ -730,7 +730,7 @@ useEffect(() => {
       {messagesLoading ? (
   <div className="flex flex-col flex-1 min-h-0 items-center justify-center gap-3 text-gray-400">
     <div className="w-8 h-8 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
-    <span className="text-sm">Loading messages...</span>
+    <span className="text-sm">Loading Messages</span>
   </div>
 ) : hasMessages ? (
         <div
