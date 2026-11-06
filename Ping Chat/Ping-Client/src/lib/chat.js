@@ -10,6 +10,9 @@ import {
   incrementUnseenMessage,
   removeMessage,
   messageSeen,
+  addCachedMessage,
+  removeCachedMessage,
+  updateCachedMessageSeen,
 } from "../store/ChatSlice.js";
 
 export const getUsers = async (dispatch) => {
@@ -27,17 +30,18 @@ export const getUsers = async (dispatch) => {
   }
 };
 
-export const getMessages = async (userId, dispatch) => {
+export const getMessages = async (userId) => {
   try {
     const { data } = await axios.get(`/api/messages/${userId}`);
-
     if (data.success) {
-      dispatch(setMessages(data.messages));
+      return data.messages;
     } else {
       toast.error(data.message || "Failed to load messages!");
+      return null;
     }
   } catch (error) {
     toast.error(error.response?.data?.message || error.message);
+    return null;
   }
 };
 
@@ -47,9 +51,11 @@ export const sendMessage = async (messageData, userId, dispatch) => {
       `/api/messages/send/${userId}`,
       messageData,
     );
-
     if (data.success) {
       dispatch(addMessage(data.newMessage));
+      dispatch(
+        addCachedMessage({ userId, message: data.newMessage }),
+      );
     } else {
       toast.error(data.message || "Failed to send message!");
     }
@@ -66,6 +72,7 @@ export const deleteMessage = async (messageId, receiverUserId, dispatch) => {
 
     if (data.success) {
       dispatch(removeMessage(messageId));
+      dispatch(removeCachedMessage({ userId: receiverUserId, messageId }));
       toast.success("Message deleted successfully!");
     } else {
       toast.error(data.message || "Failed to delete message!");
@@ -96,7 +103,10 @@ export const useSubscribeToMessages = (selectedUser, dispatch, authUser) => {
       const receiverId = newMessage.receiverId?.toString();
 
       if (selectedUserId === senderId || selectedUserId === receiverId) {
-        dispatch(addMessage(newMessage));
+       dispatch(addMessage(newMessage));
+const chatUserId =
+  senderId === authUserId ? receiverId : senderId;
+dispatch(addCachedMessage({ userId: chatUserId, message: newMessage }));
 
         if (receiverId === authUserId) {
           try {
@@ -111,12 +121,28 @@ export const useSubscribeToMessages = (selectedUser, dispatch, authUser) => {
     };
 
     const handleMessageDeleted = ({ messageId }) => {
-      dispatch(removeMessage(messageId));
-    };
+  dispatch(removeMessage(messageId));
+  if (selectedUserIdRef.current) {
+    dispatch(
+      removeCachedMessage({
+        userId: selectedUserIdRef.current,
+        messageId,
+      }),
+    );
+  }
+};
 
-    const handleMessageSeen = ({ messageId }) => {
-      dispatch(messageSeen(messageId));
-    };
+const handleMessageSeen = ({ messageId }) => {
+  dispatch(messageSeen(messageId));
+  if (selectedUserIdRef.current) {
+    dispatch(
+      updateCachedMessageSeen({
+        userId: selectedUserIdRef.current,
+        messageId,
+      }),
+    );
+  }
+};
 
     socket.on("newMessage", handleNewMessage);
     socket.on("messageDeleted", handleMessageDeleted);
