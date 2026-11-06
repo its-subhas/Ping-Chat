@@ -21,6 +21,41 @@ export const messagesSlice = createSlice({
   },
 });
 
+
+export const messageCacheSlice = createSlice({
+  name: "messageCache",
+  initialState: {},
+  reducers: {
+    setCachedMessages: (state, action) => {
+      state[action.payload.userId] = action.payload.messages;
+    },
+    addCachedMessage: (state, action) => {
+      const { userId, message } = action.payload;
+      if (!state[userId]) return;
+      if (!state[userId].some((item) => item._id === message._id)) {
+        state[userId].push(message);
+        state[userId].sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+        );
+      }
+    },
+    removeCachedMessage: (state, action) => {
+      const { userId, messageId } = action.payload;
+      if (!state[userId]) return;
+      state[userId] = state[userId].filter(
+        (message) => message._id !== messageId,
+      );
+    },
+    updateCachedMessageSeen: (state, action) => {
+      const { userId, messageId } = action.payload;
+      if (!state[userId]) return;
+      state[userId] = state[userId].map((message) =>
+        message._id === messageId ? { ...message, seen: true } : message,
+      );
+    },
+  },
+});
+
 export const usersSlice = createSlice({
   name: "users",
   initialState: [],
@@ -58,3 +93,9 @@ export const { setUsers } = usersSlice.actions;
 export const { setUnseenMessages, incrementUnseenMessage, clearUnseenMessage } =
   unseenMessagesSlice.actions;
 export const { setShowEmojiPicker } = showEmojiPickerSlice.actions;
+export const {
+  setCachedMessages,
+  addCachedMessage,
+  removeCachedMessage,
+  updateCachedMessageSeen,
+} = messageCacheSlice.actions;
