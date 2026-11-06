@@ -714,20 +714,28 @@ useEffect(() => {
 
           {/* Mobile back button */}
           <img
-            dispatch(setBackHelper(false));
+           
             data-mobile-back
-            onClick={() => window.history.back()}
+  onClick={() => {
+    dispatch(setBackHelper(false));
+    window.history.back();
+  }}
             className="md:hidden w-5 h-5 cursor-pointer shrink-0"
             src={assets.arrow}
             alt="back"
           />
 
-          <img
-            onClick={() => dispatch(setInfoUser(!infoUser))}
-            src={assets.info}
-            alt="info"
-            className="max-md:hidden w-6 h-6 sm:w-7 sm:h-7 cursor-pointer shrink-0"
-          />
+<img
+  onClick={() => {
+    dispatch(setInfoUser(!infoUser));
+    dispatch(setBackHelper(!infoUser));
+  }}
+  src={assets.info}
+  alt="info"
+  className={`max-md:hidden w-6 h-6 sm:w-7 sm:h-7 cursor-pointer shrink-0 transition ${
+    backHelper ? "brightness-0 saturate-100 invert-[58%] sepia-[75%] saturate-[500%] hue-rotate-[90deg]" : ""
+  }`}
+/>
         </div>
       </div>
 
@@ -1064,10 +1072,6 @@ useEffect(() => {
               />
             </svg>
           </button>
-
-         <button hidden={!backHelper}>
-  {backHelper ? "On" : "Off"}
-</button>
 
           <input
              ref={inputRef} 
