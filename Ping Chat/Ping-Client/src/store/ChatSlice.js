@@ -87,6 +87,17 @@ export const showEmojiPickerSlice = createSlice({
   },
 });
 
+export const backHelperSlice = createSlice({
+  name: "backHelper",
+  initialState: false,
+  reducers: {
+    setBackHelper: (state, action) => action.payload,
+  },
+});
+
+
+export const {setBackHelper } = backHelperSlice.actions;
+
 export const { setMessages, addMessage, removeMessage, messageSeen } =
   messagesSlice.actions;
 export const { setUsers } = usersSlice.actions;
