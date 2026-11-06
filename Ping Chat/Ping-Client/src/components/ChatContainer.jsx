@@ -102,6 +102,7 @@ messageCacheRef.current = messageCache;
   const geminiRequestIdRef = useRef(0);
   const geminiMessagesRef = useRef(geminiMessages);
   const inputRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     geminiMessagesRef.current = geminiMessages;
@@ -627,8 +628,30 @@ useEffect(() => {
     }
   }, [incoming, navigate]);
 
+useEffect(() => {
+  if (!selectedUser?._id) {
+    dispatch(setBackHelper(false));
+    return;
+  }
+
+  dispatch(setBackHelper(true));
+
+  const container = chatContainerRef.current;
+
+  if (container) {
+    const touchEvent = new Event("touchstart", {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    container.dispatchEvent(touchEvent);
+  }
+}, [selectedUser?._id, dispatch]);
+
   return selectedUser ? (
     <div
+   ref={chatContainerRef}
+  onTouchStart={() => dispatch(setBackHelper(true))}
       className={`h-full min-h-0 min-w-0 overflow-hidden relative flex flex-col backdrop-blur-lg ${
         infoUser ? "max-md:hidden" : ""
       }`}
@@ -726,15 +749,10 @@ useEffect(() => {
           />
 
 <img
-  onClick={() => {
-    dispatch(setInfoUser(!infoUser));
-    dispatch(setBackHelper(!infoUser));
-  }}
+  onClick={() => dispatch(setInfoUser(!infoUser))}
   src={assets.info}
   alt="info"
-  className={`max-md:hidden w-6 h-6 sm:w-7 sm:h-7 cursor-pointer shrink-0 transition ${
-    backHelper ? "brightness-0 saturate-100 invert-[58%] sepia-[75%] saturate-[500%] hue-rotate-[90deg]" : ""
-  }`}
+  className={"max-md:hidden w-6 h-6 sm:w-7 sm:h-7 cursor-pointer shrink-0"}
 />
         </div>
       </div>
