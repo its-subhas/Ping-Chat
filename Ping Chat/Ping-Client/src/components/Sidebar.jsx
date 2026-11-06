@@ -144,10 +144,11 @@ function Sidebar() {
 
         <div
           className="mt-4 sm:mt-5 flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-2xl bg-[#282142] border border-gray-600 cursor-pointer"
-          onClick={() => {
-            dispatch(setSelectedUser(Gemini));
-            dispatch(setGroup(false));
-          }}
+onClick={() => {
+  dispatch(setSelectedUser(Gemini));
+  dispatch(setGroup(false));
+  dispatch(clearUnseenMessage("gemini_001"));
+}}
         >
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 cursor-pointer">
             <img
@@ -164,6 +165,11 @@ function Sidebar() {
                 Your AI assistant
               </p>
             </div>
+{(unseenMessages?.gemini_001 || 0) > 0 && (
+  <p className="shrink-0 text-[10px] sm:text-xs h-5 min-w-5 px-1 flex justify-center items-center rounded-full bg-violet-500/50">
+    {unseenMessages.gemini_001}
+  </p>
+)}
           </div>
 
           {/* <div
