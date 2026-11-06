@@ -35,6 +35,7 @@ import {
   setMessages,
   setShowEmojiPicker,
   incrementUnseenMessage,
+  setCachedMessages,
 } from "../store/ChatSlice.js";
 import { toast } from "react-hot-toast";
 import { getSocket } from "../lib/auth.js";
@@ -65,6 +66,10 @@ function ChatContainer() {
   const audioCall = useSelector((state) => state.audioCall);
   const videoCall = useSelector((state) => state.videoCall);
   const geminiMessages = useSelector((state) => state.geminiMessages);
+
+  const messageCache = useSelector((state) => state.messageCache);
+const messageCacheRef = useRef(messageCache);
+messageCacheRef.current = messageCache;
 
   const [geminiLoading, setGeminiLoading] = useState(false);
   const [messagesLoading, setMessagesLoading] = useState(false);
@@ -469,21 +474,38 @@ if (response?.success) {
     }
   };
 
- useEffect(() => {
-  if (!selectedUser?._id || selectedUser._id === "gemini_001") {
+useEffect(() => {
+  const userId = selectedUser?._id;
+
+  if (!userId || userId === "gemini_001") {
     setMessagesLoading(false);
     dispatch(setMessages([]));
     return;
   }
 
   let active = true;
+  const cachedMessages = messageCacheRef.current[userId];
 
-  setMessagesLoading(true);
-  dispatch(setMessages([]));
+  if (cachedMessages) {
+    dispatch(setMessages(cachedMessages));
+    setMessagesLoading(false);
+  } else {
+    dispatch(setMessages([]));
+    setMessagesLoading(true);
+  }
 
-  getMessages(selectedUser._id, dispatch).finally(() => {
-    if (active) setMessagesLoading(false);
-  });
+  getMessages(userId)
+    .then((loadedMessages) => {
+      if (!active) return;
+
+      if (loadedMessages) {
+        dispatch(setCachedMessages({ userId, messages: loadedMessages }));
+        dispatch(setMessages(loadedMessages));
+      }
+    })
+    .finally(() => {
+      if (active) setMessagesLoading(false);
+    });
 
   return () => {
     active = false;
