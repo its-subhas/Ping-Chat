@@ -36,6 +36,7 @@ import {
   setShowEmojiPicker,
   incrementUnseenMessage,
   setCachedMessages,
+  setBackHelper,
 } from "../store/ChatSlice.js";
 import { toast } from "react-hot-toast";
 import { getSocket } from "../lib/auth.js";
@@ -66,6 +67,7 @@ function ChatContainer() {
   const audioCall = useSelector((state) => state.audioCall);
   const videoCall = useSelector((state) => state.videoCall);
   const geminiMessages = useSelector((state) => state.geminiMessages);
+  const backHelper = useSelector((state) => state.backHelper);
 
   const messageCache = useSelector((state) => state.messageCache);
 const messageCacheRef = useRef(messageCache);
@@ -637,6 +639,7 @@ useEffect(() => {
           onClick={() => {
             if (window.matchMedia("(max-width: 767px)").matches) {
               dispatch(setInfoUser(true));
+              dispatch(setBackHelper(true));
             }
           }}
         >
@@ -1059,6 +1062,10 @@ useEffect(() => {
                 d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"
               />
             </svg>
+          </button>
+
+          <button hidden >
+            {backHelper ? "Back-On": "Back-Off"}
           </button>
 
           <input
